@@ -16,7 +16,7 @@ function LoginFunc() {
 	// JSON object
 	var obj = {
     	Account : document.getElementById("Account").value,
-    	PassWord : document.getElementById("Password").value
+    	Password : document.getElementById("Password").value
 	};
 	var json=JSON.stringify(obj);
 	
@@ -24,7 +24,12 @@ function LoginFunc() {
 	var req=xhr();
 	req.onreadystatechange=function(){
   		if (req.readyState==4 && req.status==200){
-  			document.getElementById("LoginForm").innerHTML=req.responseText;
+  			var resp=req.responseText;
+  			if(resp=="Login Failed"){
+  				document.getElementById("Login Status").innerHTML="Login Failed";
+  			}else{
+  				document.getElementById("Login Status").innerHTML=resp;
+  			}
     	}
   	}
 	req.open("POST","/login",true);

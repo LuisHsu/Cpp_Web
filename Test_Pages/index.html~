@@ -6,13 +6,12 @@
 	</head>
 	
 	<body>
+		<h1>Login Test</h1>
 		<div id="LoginForm">
-			<h1>Login Test</h1>
-			<form action="login" method="post">
-				ID:<input type="text" id="Account" /><br>
-				PW:<input type="text" id="Password" /><br>
-				<input type="button" value="Submit" onclick="LoginFunc()"/>
-			</form>
+			ID:<input type="text" id="Account" /><br>
+			PW:<input type="text" id="Password" /><br>
+			<input type="button" value="Submit" onclick="LoginFunc()"/><br>
+			<h2 id="Login Status">Not Login</h2>			
 		</div>
 	</body>
 	
