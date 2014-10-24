@@ -25,7 +25,7 @@ function LoginFunc() {
 	req.onreadystatechange=function(){
   		if (req.readyState==4 && req.status==200){
   			var resp=req.responseText;
-  			if(resp==""){
+  			if(resp=="Login Failed"){
   				document.getElementById("Login Status").innerHTML="Login Failed";
   			}else{
   				document.getElementById("Login Status").innerHTML=resp;

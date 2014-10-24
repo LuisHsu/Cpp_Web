@@ -15,7 +15,7 @@ var xhr = function() {
 function LoginFunc() {
 	// JSON object
 	var obj = {
-    	Account : document.getElementById("Account").value,
+    	UserName : document.getElementById("Account").value,
     	Password : document.getElementById("Password").value
 	};
 	var json=JSON.stringify(obj);
