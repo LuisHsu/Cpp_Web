@@ -1,0 +1,93 @@
+html, body{
+	min-height:100%;
+	height:100%;
+	min-width: 900px;
+	width:100%;
+	margin:0;
+	padding:0;
+	background-color: #F2D5BB;
+	color: #DB8775;
+	font-family: 'Montserrat', sans-serif;
+	overflow-x: hidden;
+}
+
+/* left column */
+#left{
+	width: 280px;
+	height: 100%;
+	z-index: 999;
+	color: #F8DDBE;
+	padding: 10px;
+	display: inline-block;
+	position: fixed;
+	background-color: #8C4A32;
+	cursor: default;
+}
+#list li{
+	cursor: pointer;
+}
+#list li:hover{
+	background-color: #BF834E;
+}
+
+/* main column */
+#main{
+	display: inline-block;
+	position: absolute;
+	left: 300px;
+	padding: 30px;
+}
+
+/* works */
+.works{
+	border: 1px solid black;
+	border-collapse: separate;
+    border-spacing: 0;
+	border-radius: 10px;
+    -moz-border-radius: 10px;
+	width: 90%;
+	margin: 50px 0;
+}
+.works_img{
+	width:200px;
+	display: inline-block;
+	margin: 10px;
+}
+.works_img img{width:100%;}
+.works_text{
+	display: inline-block;
+	padding-left: 10px;
+	margin: 10px;
+}
+
+/* Search */
+#Search{
+	text-align:right;
+	
+}
+#SearchText{
+	padding: 6px 15px;
+	font-size:14px;
+	color: #666;
+	border:1px solid #DB8775; 
+	border-top-left-radius: 5px 5px;
+	border-bottom-left-radius: 5px 5px;	
+}
+#SearchButton{
+	margin: 0;
+	padding: 0;
+	width:30px;
+	height:30px;
+	font-size:14px;
+	cursor: pointer;
+	color: #ffffff;
+	border: solid 1px #DB8775; 
+	border-top-right-radius: 5px 5px;
+	border-bottom-right-radius: 5px 5px;
+	background: #DB8775 url('search.png');
+}
+/* Fixes submit button height problem in Firefox */
+#SearchButton:-moz-focus-inner {
+  border: 0;
+}
+

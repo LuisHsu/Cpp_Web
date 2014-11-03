@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="import" href="/head.htm"/>
+</head>
+<body>
+	<div id="left"></div>
+	<div id="main">
+		<div id="Category_Title">
+			haha
+		</div>
+		<div id="container">
+			<% for(var i=0;i<titles.length;++i){ %>
+			<div class="imgWork">
+				<img src="laptop-frame.png" style="z-index:999;width:440px;"/>
+				<img class="Image" src="<%= pics[i] %>"/>
+				<div class="Text">
+					<div style="font-size: 2.5em"><%= titles[i] %></div><br/>
+					<div style="font-size: 1.5em"><%= authors[i] %></div><br/>
+					<div style="font-size: 1.5em"><%= subtitles[i] %></div><br/>
+				</div>
+				<div class="detail">
+					<font size="5"><%= names[i] %> :</font> <%= descriptions[i] %>
+				</div>
+			</div>
+			<% } %>
+		</div>
+	</div>
+</body> 
+
+<style>
+.imgWork {
+	display:inline-block;
+	position: relative;
+	width:440px;
+	height:300px;
+	z-index: 30;
+	cursor:pointer;
+	background-color: #DB8775;
+	padding: 10px;
+	border-radius: 10px;
+	margin: 10px;
+}
+.Image{
+	width:300px;
+	height: 185px;
+	position:absolute;
+	top:25px;
+	left:79px;
+}
+.Text{
+	text-align: left;
+	padding: 10px;
+	width:280px;
+	height:165px;
+	display:none;
+	background-color:#8C4A32;
+	position:absolute;
+	z-index: 20;
+	top: 25px;
+	left:79px;
+	opacity: 0.9;
+}
+.detail{
+	padding:10px;
+	top: 250px;
+	position: absolute;
+	color: #8C4A32;
+	font-weight: bold;
+}
+#container{text-align:center;}
+#Category_Title{
+	width:100%;
+	text-align:center;
+	font-size:30px;
+}
+
+</style>
+<script>
+$( document ).ready(function() {
+  $('.imgWork')
+	.mouseenter(function(){
+		$(this).children(".Image").css("z-index","10");
+		var Text = $(this).children(".Text");
+		$(Text).fadeIn("fast");		
+	})
+	.mouseleave(function(){
+		var Text = $(this).children(".Text");
+		$(Text).fadeOut("slow");		
+		
+	})
+	.click(function(){
+		window.location.href = 'detail.htm';
+	});
+});
+</script>
+
+</html>

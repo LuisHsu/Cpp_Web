@@ -1,12 +1,13 @@
 var express=require('express');
 var bodyParser=require('body-parser');
 var maria=require('mariasql');
+var fs=require('fs');
 var inspect=require('util').inspect;
 
 //Database
 var DB=new maria();
 DB.connect({
-		host: "140.116.246.195",
+		host: "localhost",
 		user: "root",
 		password: "cpp2015",
 		db: "Cpp2015"
@@ -27,7 +28,28 @@ var app=express();
 // Set to get ip
 app.enable('trust proxy');
 
-//Serve static file
+// Set ejs
+app.set('view engine','ejs');
+
+//Serve ejs file
+
+// Redirect root
+app.get('/' , function(req,res){
+	res.redirect('/index');
+});
+
+app.get('/index', function(req,res){
+	res.render('index',
+	{
+		titles : [123,456],
+		authors : [123,456],
+		subtitles : [123,456],
+		names : [123,456],
+		descriptions : [123,456],
+		pics : ['ContentPic/Downstair/1/icon.png','ContentPic/Downstair/1/icon.png']
+	});
+});
+
 app.use(express.static(__dirname + '/Test_Pages'));
 
 //Parse json
