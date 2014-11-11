@@ -1,0 +1,174 @@
+ <% include layout/head %>
+<body>
+	<div id="left">
+		 <% include layout/header %>
+	</div>
+	<div id="main">
+		<div class="imgWork" style="vertical-align:middle;">
+			<img src="img/laptop-frame.png" style="z-index:999;width:440px;"/>
+			<img class="Image" src="img/pic.png"/>
+			<div class="Text">
+				<div style="font-size: 2.5em">Title</div><br/>
+				<div style="font-size: 1.5em">Author</div><br/>
+				<div style="font-size: 1.5em">subtitle</div><br/>
+			</div>
+		</div>
+		<div id="Title" style="display:inline-block;font-size:2em;line-height:2em;margin:20px;height:300px;vertical-align:middle;width:380px;">
+			<div style="font-size:1.8em">Title </div>
+			<div>Subtitle</div>
+			<div>Author &nbsp;&nbsp;&nbsp;&nbsp;Upload Time</div>
+			<div style="height:50px">
+			<img src="img/star2.png" width="50px"/><img src="img/star2.png" width="50px"/><img src="img/star2.png" width="50px"/><img src="img/star.png" width="50px"/><img src="img/star.png" width="50px"/>
+			</div>
+			<div>popularity &nbsp;&nbsp;&nbsp;times</div>
+		</div>
+		<hr/>
+		<div>
+			<div style="font-size:2.5em">Downloads</div><br/>
+			<img src="img/windows.png" width="130px"/>
+			<img src="img/linux.png" width="130px"/>
+			<img src="img/mac.png" width="130px"/><br/><br/>
+		</div>
+		<hr/>
+		<div>
+			<span style="font-size:2.5em">Pictures</span>
+			<ul id="featured">
+				<li>
+					<image src="p1.png" alt="Old School Diner" />
+					<div>
+						<strong>View1</strong>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
+					</div>
+				</li>
+				<li>
+					<image src="p2.jpg" alt="Vintage Pool" />
+					<div>
+						<strong>View2</strong>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
+					</div>
+				</li>
+				<li>
+					<image src="p3.jpg" alt="Retro Gas Pump" />
+					<div>
+						<strong>View3</strong>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
+					</div>
+				</li>
+				<li>
+					<image src="p4.jpg" alt="Old Car Steering Wheel" />
+					<div>
+						<strong>View4</strong>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<hr/>
+		<div>
+			<span style="font-size:2.5em">Description</span>
+			<p style="font-size:1.5em">
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+			</p>
+			<p style="font-size:1.5em">
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+			</p>	
+		</div>
+		<hr/>
+	</div>
+</body>
+
+<style>
+.imgWork {
+	display:inline-block;
+	position: relative;
+	z-index: 30;
+	cursor:pointer;
+	padding: 10px;
+}
+.Image{
+	width:300px;
+	height: 185px;
+	position:absolute;
+	top:25px;
+	left:79px;
+}
+.Text{
+	text-align: left;
+	padding: 10px;
+	width:280px;
+	height:165px;
+	display:none;
+	background-color:#8C4A32;
+	position:absolute;
+	z-index: 20;
+	top: 25px;
+	left:79px;
+	opacity: 0.9;
+}
+#featured img{
+	height: 310px;
+	margin: 10px;
+}
+#featured {
+	background-color:rgba(140,74,50,0.5);
+	bottom:0;
+	height:100px;
+	left:0;
+	position:
+	absolute;
+	width:100%;
+	z-index:10;
+}
+#featured .slider-closed {width:100px;}
+#featured strong {color:#fff;display:block;margin-bottom:5px;padding:10px 10px 0;text-shadow:none;}
+#featured p {color:#fff;display:block;font-size:14px;padding:0 10px;text-shadow:none;}
+#featured .slider-open strong {color:#fff;font-size:22px;}
+#featured .slider-closed strong {font-size:18px;margin-bottom:5px;}
+#featured .slider-closed p {display:none;}
+
+</style>
+<script>
+$( document ).ready(function() {
+  var WIDTH = $( window ).width()-350;
+  $('.imgWork')
+	.mouseenter(function(){
+		$(this).children(".Image").css("z-index","10");
+		var Text = $(this).children(".Text");
+		$(Text).fadeIn("fast");		
+	})
+	.mouseleave(function(){
+		var Text = $(this).children(".Text");
+		$(Text).fadeOut("slow");		
+		
+	});
+  $("#featured").zAccordion({
+		tabWidth: 100,
+		speed: 650,
+		slideClass: 'slider',
+		animationStart: function () {
+			$('#slider').find('li.slider-open div').css('display','none');
+			$('#slider').find('li.slider-previous div').css('display','none');
+		},
+		animationComplete: function () {
+			$('#slider').find('li div').fadeIn(600);
+		},
+		width: WIDTH,
+		height: 450
+  });
+});
+</script>
+</html>
