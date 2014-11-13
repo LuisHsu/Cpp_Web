@@ -10,20 +10,19 @@
 			<hr style="border:1px solid #F8DDBE;"/>
 			<ul type="none" style="margin:0;padding:0;font-size:1.6em;">
 				<li onClick="location.href='index.htm'">About Course</li>
-				<li onClick="location.href='index.htm'">Works</li>
-				<ul type="none" style="margin:0;font-size:0.9em;" 
-					onClick="location.href='index.htm'">
-					<li>Down Stairs</li>
-					<li>Snake</li>
-					<li>Tetris</li>
-					<li>Minesweeper</li>
+				<li onClick="location.href='works?work=all&order=Latest'">Works</li>
+				<ul type="none" style="margin:0;font-size:0.9em;">
+					<% for(var j=0;j<categories.length;++j){ %>
+					<% var ClickRef="location.href='works?work="+categories[j]+"&order=Latest'" %>
+					<li onClick=<%= ClickRef %>><%= categories[j] %></li>
+					<% } %>
 				</ul>
 				<li onClick="location.href='login.htm'">Update Games</li>
 				<li onClick="location.href='index.htm'">Contact</li>
 			</ul>
 			<hr style="border:1px solid #F8DDBE;"/>
 		</div>
-		<div style="font-size:1.3em;bottom:30px;position:absolute;width:280px;">
+		<div style="font-size:1.3em;bottom:30px;position:relative;width:280px;">
 			<div id="Search">
 				<input type="text" id="SearchText" size="10" maxlength="120" placeholder="Search Works" /><input type="submit" value=" " id="SearchButton" />
 			</div>

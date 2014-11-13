@@ -63,10 +63,11 @@ html, body{
 /* Search */
 #Search{
 	text-align:right;
-	
+	height:55px;
 }
 #SearchText{
 	padding: 6px 15px;
+	margin-top:25px;
 	font-size:14px;
 	color: #666;
 	border:1px solid #DB8775; 
