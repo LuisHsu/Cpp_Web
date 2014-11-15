@@ -1,26 +1,32 @@
- <% include layout/head %>
+ <% include ../layout/head %>
 <body>
 	<div id="left">
-		 <% include layout/header %>
+		 <% include ../layout/header %>
 	</div>
 	<div id="main">
 		<div class="imgWork" style="vertical-align:middle;">
 			<img src="img/laptop-frame.png" style="z-index:999;width:440px;"/>
-			<img class="Image" src="img/pic.png"/>
+			<img class="Image" src=<%= cover %> >
 			<div class="Text">
-				<div style="font-size: 2.5em">Title</div><br/>
-				<div style="font-size: 1.5em">Author</div><br/>
-				<div style="font-size: 1.5em">subtitle</div><br/>
+				<div style="font-size: 2.5em"><%= title %></div><br/>
+				<div style="font-size: 1.5em"><%= author %></div><br/>
+				<div style="font-size: 1.5em"><%= subtitle %></div><br/>
 			</div>
 		</div>
 		<div id="Title" style="display:inline-block;font-size:2em;line-height:2em;margin:20px;height:300px;vertical-align:middle;width:380px;">
-			<div style="font-size:1.8em">Title </div>
-			<div>Subtitle</div>
-			<div>Author &nbsp;&nbsp;&nbsp;&nbsp;Upload Time</div>
+			<div style="font-size:1.8em"><%= title %></div>
+			<div style="font-size:1.0em;"><%= subtitle %></div>
+			<div style="font-size:0.9em;line-height:1.5em">Author:&nbsp;&nbsp;<%= author %> &nbsp;&nbsp;</br>
+			<font style="font-size:0.8em">Upload Time:&nbsp;&nbsp;<%= upload_time %></font></div>
 			<div style="height:50px">
-			<img src="img/star2.png" width="50px"/><img src="img/star2.png" width="50px"/><img src="img/star2.png" width="50px"/><img src="img/star.png" width="50px"/><img src="img/star.png" width="50px"/>
+			<% for(var i=0;i < star;++i){ %>
+			<img src="img/star2.png" width="50px"/>
+			<% } %>
+			<% for(var i=0;i<(5-star);++i){ %>
+			<img src="img/star.png" width="50px"/>
+			<% } %>
 			</div>
-			<div>popularity &nbsp;&nbsp;&nbsp;times</div>
+			<div style="font-size:0.6em">Popularity:&nbsp;<%= popularity %> &nbsp;&nbsp;&nbsp;&nbsp;Download times:&nbsp;<%= download_times %></div>
 		</div>
 		<hr/>
 		<div>
@@ -31,60 +37,20 @@
 		</div>
 		<hr/>
 		<div>
-			<span style="font-size:2.5em">Pictures</span>
+			<span style="font-size:2.5em">Snapshots</span>
 			<ul id="featured">
+				<% for(var i=0;i< picts.length;++i){ %>
 				<li>
-					<image src="p1.png" alt="Old School Diner" />
-					<div>
-						<strong>View1</strong>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
-					</div>
+					<image src= <%= picts[i] %> >
 				</li>
-				<li>
-					<image src="p2.jpg" alt="Vintage Pool" />
-					<div>
-						<strong>View2</strong>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
-					</div>
-				</li>
-				<li>
-					<image src="p3.jpg" alt="Retro Gas Pump" />
-					<div>
-						<strong>View3</strong>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
-					</div>
-				</li>
-				<li>
-					<image src="p4.jpg" alt="Old Car Steering Wheel" />
-					<div>
-						<strong>View4</strong>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.</p>
-					</div>
-				</li>
+				<% } %>
 			</ul>
 		</div>
 		<hr/>
 		<div>
 			<span style="font-size:2.5em">Description</span>
 			<p style="font-size:1.5em">
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-			</p>
-			<p style="font-size:1.5em">
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor lacus sollicitudin ligula sagittis.
+				<%= description %>
 			</p>	
 		</div>
 		<hr/>
@@ -128,8 +94,7 @@
 	bottom:0;
 	height:100px;
 	left:0;
-	position:
-	absolute;
+	position:absolute;
 	width:100%;
 	z-index:10;
 }
@@ -167,7 +132,7 @@ $( document ).ready(function() {
 			$('#slider').find('li div').fadeIn(600);
 		},
 		width: WIDTH,
-		height: 450
+		height: 335
   });
 });
 </script>
