@@ -31,9 +31,15 @@
 		<hr/>
 		<div>
 			<div style="font-size:2.5em">Downloads</div><br/>
-			<img src="img/windows.png" width="130px"/>
-			<img src="img/linux.png" width="130px"/>
-			<img src="img/mac.png" width="130px"/><br/><br/>
+			<% if(windows_path!=null){ %>
+			<img src="img/windows.png" width="130px" onclick=<%= windows_path%> >
+			<% } %>
+			<% if(linux_path!=null){ %>
+			<img src="img/linux.png" width="130px" onclick=<%= linux_path %> >
+			<% } %>
+			<% if(mac_path!=null){ %>
+			<img src="img/mac.png" width="130px" onclick=<%= mac_path %> ><br/><br/>
+			<% } %>
 		</div>
 		<hr/>
 		<div>

@@ -65,7 +65,6 @@ app.get('/works', function(req,res){
 	var titles=new Array();
 	var subs=new Array();
 	var auths=new Array();
-	var descs=new Array();
 	var indices=new Array();
 	var pics=new Array();
 	var Title_Work='';
@@ -103,7 +102,6 @@ app.get('/works', function(req,res){
 			titles[c]=row.title;
 			subs[c]=row.subtitle;
 			auths[c]=row.author;
-			descs[c]=row.description;
 			indices[c]=row.project_index;
 			pics[c]="projects/"+row.project_index+"/cover";
 			c+=1;
@@ -117,7 +115,6 @@ app.get('/works', function(req,res){
 				titles: titles,
 				subtitles: subs,
 				authors: auths,
-				descriptions: descs,
 				indices:indices,
 				pics: pics,
 				Class_Latest: Class_Latest,
@@ -141,6 +138,9 @@ app.get('/detail', function(req,res){
 	var download_times=0;
 	var picts=new Array();
 	var description='';
+	var windows_path='';
+	var linux_path='';
+	var mac_path='';
 	
 	// Get data and render page
 	DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index="+req.query.index+";")
@@ -157,6 +157,21 @@ app.get('/detail', function(req,res){
 				picts[i]='projects/'+req.query.index+'/snap_'+i;
 			}
 			description=row.description;
+			if(row.win_path!=null){
+				windows_path='window.location.href="download?index='+req.query.index+'&path='+row.win_path+'"';
+			}else{
+				windows_path=null;
+			}
+			if(row.linux_path!=null){
+				linux_path='window.location.href="download?index='+req.query.index+'&path='+row.linux_path+'"';
+			}else{
+				linux_path=null;
+			}
+			if(row.mac_path!=null){
+				mac_path='window.location.href="download?index='+req.query.index+'&path='+row.mac_path+'"';
+			}else{
+				mac_path=null;
+			}
 		})
 		.on('error',function(err){
 			console.log(req.ip+': Error- '+inspect(err));
@@ -174,9 +189,17 @@ app.get('/detail', function(req,res){
 				download_times:download_times,
 				picts:picts,
 				categories:Category,
-				cover:cover
+				cover:cover,
+				windows_path:windows_path,
+				linux_path:linux_path,
+				mac_path:mac_path
 			});
 	});
+});
+
+// Download
+app.get('/download',function(req,res){
+	res.download(__dirname+'/projects/'+req.query.index+'/'+req.query.path);
 });
 
 // Project file
@@ -187,5 +210,5 @@ app.use(express.static(__dirname+'/resourses'));
 
 // Listen
 app.listen(8080,function(){
-	console.log("Test website Started");
+	console.log("PD2 game website Started");
 });
