@@ -2,26 +2,27 @@
 <body>
 	<div id="left">
 		 <% include ../layout/header %>
+		 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+		 <script src="js/login_req.js"></script>
 	</div>
 	<div id="main">
-	<div id="container">
-		<div class="ribbon"></div>
-		<div class="login">
-		  <h1>Let's get started.</h1>
-		  <p>This will be an amazing experience</p>
-		  <form action="login">
-			<div class="input">
-			  <div class="blockinput">
-				<i class="icon-envelope-alt"></i><input type="mail" placeholder="Student ID">
-			  </div>
-			  <div class="blockinput">
-				<i class="icon-unlock"></i><input type="password" placeholder="Password">
-			  </div>
+		<div id="container">
+			<div class="ribbon"></div>
+			<div class="login">
+				<h1>Let's get started.</h1>
+				<p>This will be an amazing experience</p>
+				<div class="input">
+					<div class="blockinput">
+						<i class="icon-envelope-alt"></i><input type="text" id="ID" placeholder="Student ID">
+				  	</div>
+					<div class="blockinput">
+						<i class="icon-unlock"></i><input type="password" id="Password" placeholder="Password">
+					</div>
+				</div>
+				<button onclick="login()">Login</button>
+				<h3 style="color:#ff0000" id="Status"><%= status %></h3>
 			</div>
-			<button>Login</button>
-		  </form>
-		 </div>
-	</div>
+		</div>
 	</div>
 </body>
 
@@ -142,6 +143,6 @@ p{
   margin-top: 0;
   margin-bottom: 30px;
 }
-	</style>
+</style>
 </html>
 
