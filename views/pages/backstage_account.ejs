@@ -13,12 +13,15 @@
 		<div id="container">
 			<h1 style="margin:0px;margin-bottom:15px;">Change Password</h1>
 			<div id="ChangePW">
-				&nbsp Old：<input type="text" id="old_pw" class="pwinput" /> &nbsp
-				New：<input type="text" id="new_pw" class="pwinput" /> &nbsp
-				Repeat：<input type="text" id="conf_pw" class="pwinput" /> &nbsp
+				&nbsp Old：<input type="password" id="old_pw" class="pwinput" /> &nbsp
+				New：<input type="password" id="new_pw" class="pwinput" /> &nbsp
+				Repeat：<input type="password" id="conf_pw" class="pwinput" /> &nbsp
 				<button id="chg_btn" class="btn" onclick="ChangePassword()">change</button>
 			</div>
 			<h1 style="margin-top:15px;">Permission Setting</h1>
+			<% if((permission=="Admin")||(permission=="Owner")){ %>
+			<button id="cre_btn" class="edbtn" onclick="creclick()">Create User</button>
+			<% } %>
 			<table id="permtable" style="width:800px;margin:auto;text-align:center;">
 				<tr style="	background-color:#bb4336;color:#ffffff;border:0;">
 					<th class="tablehead">ID</th>
@@ -33,7 +36,7 @@
 					<td><%= perms[i] %></td>
 					<% if((perms[i]!="Owner")&&((permission=="Admin")||(permission=="Owner"))&&((perms[i]=="User")||(ids[i]==viewerid)||(permission=="Owner"))){ %>
 					<td><button class="edbtn" acc=<%= ids[i] %> onclick="edclick(this)"> Edit</button>
-					&nbsp<button class="edbtn" acc=<%= ids[i] %> > Delete</button></td>
+					&nbsp<button class="edbtn" acc=<%= ids[i] %> onclick="delclick(this)" > Delete</button></td>
 					<% } %>
 				</tr>
 				<% } %>
@@ -43,8 +46,8 @@
 				<h2 style="margin-top:15px;">Edit Account</h2>
 				<div style="text-align:right;padding-right:50px;">
 					Account ID:<input type="text" id="edit_id" class="pwinput" /></br>
-					New Password:<input type="text" id="edit_pw" class="pwinput" /></br>
-					Confirm New:<input type="text" id="edit_conf" class="pwinput" /></br>
+					New Password:<input type="password" id="edit_pw" class="pwinput" /></br>
+					Repeat New:<input type="password" id="edit_conf" class="pwinput" /></br>
 				</div>
 				<div style="padding-left:44px;">
 					Permission:
@@ -60,12 +63,25 @@
 			</div>
 			<div id="deldialog" class="dialog" style="height:220px;" acc='' >
 				<h2 style="margin-top:15px;">Delete Account</h2>
-				<h4 style="margin:0;color:#ee2a2a;">Sure to delete?</br>
+				<h4 style="margin:0;">Sure to delete &nbsp<font id="del_id" style="color:#ee2a2a;"></font>&nbsp ?</br>
 				Type your password to comfirm.</h4>
 				<center>
-					<input type="text" id="edit_conf" class="pwinput" style="width:300px;"/></br>
-					<button id="del_button" class="btn">Delete</button>
-					<button id="delcan_button" class="btn">Cancel</button>
+					<input type="password" id="del_conf" class="pwinput" style="width:300px;"/></br>
+					<button id="del_button" class="btn" onclick="del_de()">Delete</button>
+					<button id="delcan_button" class="btn" onclick="del_cancel()">Cancel</button>
+				</center>
+			</div>
+			<div id="credialog" class="dialog" style="height:260px;">
+				<h2 style="margin-top:15px;">Create User</h2>
+				<div style="text-align:right;padding-right:50px;">
+					Account ID:<input type="text" id="cre_id" class="pwinput" /></br>
+					Password:<input type="password" id="cre_pw" class="pwinput" /></br>
+					Repeat:<input type="password" id="cre_conf" class="pwinput" /></br>
+					Your Password:<input type="password" id="cre_your" class="pwinput" /></br>
+				</div>
+				<center>
+					<button id="cre_button" class="btn"  onclick="cre_create()">Create</button>
+					<button id="crecan_button" class="btn" onclick="cre_cancel()">Cancel</button>
 				</center>
 			</div>
 			<% } %>
@@ -148,6 +164,14 @@
 	line-height: 32px;
 	font-size:21px;
 	display:none;
+}
+#cre_btn{
+	width:120px;
+	height:30px;
+	font-size:15px;
+	position:absolute;
+	top:180px;
+	right:135px;
 }
 <% } %>
 </style>

@@ -194,9 +194,9 @@ module.exports=function(app,DB,Category,AES){
 				if(found==1){
 					if(Password==req.session.password){
 						if((Permission=="Admin")||(Permission=="Owner")){
-							// check permission
+							// check repeat
 							if(req.body.pw_new!=req.body.pw_conf){
-								res.send("Confirm password didn't match new password!");
+								res.send("Repeat password didn't match new password!");
 								return;
 							}
 							// Create SQL Query string
@@ -241,6 +241,70 @@ module.exports=function(app,DB,Category,AES){
 					res.send("Authentication Failed!");
 				}
 			});
+	});
+
+	// Delete Account
+	var perm_del='';
+	var Pass_del='';
+	app.post('/AccountDelete',function(req,res){
+		if(req.body.section=="1"){
+			var ID=req.session.id;
+			var Ra1=req.body.key;
+			var found=0;
+			var error=0;
+			DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: ID})
+				.on('result',function(res){
+					res.on('row',function(row){
+						Pass_del=row.password;
+						perm_del=row.permission;
+						found=1;
+					})
+					.on('error',function(err){
+						console.log("Failed to get Password"+': Error- '+inspect(err));
+						error=1;
+					})
+				})
+				.on('end',function(){
+					if(error==1){
+						res.send("Authentication Failed! Please re-login and try again!");
+						return;
+					}
+					if(found==1){
+						plain_Rb=makepassword();
+						var Rb1=AES.encrypt(plain_Rb,Pass_del);
+						res.send(JSON2.stringify(JSON2.decycle({Ra: Ra1,Rb: Rb1})));
+					}else{
+						res.send("Authentication Failed! Please re-login and try again!");
+					}
+				});
+		}else{
+			if(req.body.section=="2"){
+				if(("\""+plain_Rb+"\"")==JSON2.stringify(JSON2.decycle(req.body.Rb))){
+					if((perm_del=="Admin")||(perm_del=="Owner")){
+						var delID=AES.decrypt(req.body.delID,Pass_del).toString(CryptoJS.enc.Utf8);
+						var error=0;
+						AdmDB.query('DELETE FROM Cpp2015.Account_Table WHERE id= :id;',{id: delID})
+							.on('result',function(res){
+								res.on('error',function(err){
+									console.log("Failed to delete Account"+': Error- '+inspect(err));
+									error=1;
+								})
+							})
+							.on('end',function(){
+								if(error==1){
+									res.send("Account delete Failed!");
+								}else{
+									res.send("Account delete Success!");
+								}
+							});
+					}else{
+						res.send("Only Admin or Owner can delete accounts!");
+					}
+				}else{
+					res.send("Wrong password!");
+				}
+			}
+		}
 	});
 	
 	// Bulletin
@@ -310,4 +374,102 @@ module.exports=function(app,DB,Category,AES){
 		}
 		res.redirect('/loginpage');
 	});
+	
+	// Create Account
+	var perm_cre='';
+	var Pass_cre='';
+	app.post('/AccountCreate',function(req,res){
+		if(req.body.section=="1"){
+			var ID=req.session.id;
+			var Ra1=req.body.key;
+			var found=0;
+			var error=0;
+			DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: ID})
+				.on('result',function(res){
+					res.on('row',function(row){
+						Pass_cre=row.password;
+						perm_cre=row.permission;
+						found=1;
+					})
+					.on('error',function(err){
+						console.log("Failed to get Password"+': Error- '+inspect(err));
+						error=1;
+					})
+				})
+				.on('end',function(){
+					if(error==1){
+						res.send("Authentication Failed! Please re-login and try again!");
+						return;
+					}
+					if(found==1){
+						plain_Rb=makepassword();
+						var Rb1=AES.encrypt(plain_Rb,Pass_cre);
+						res.send(JSON2.stringify(JSON2.decycle({Ra: Ra1,Rb: Rb1})));
+					}else{
+						res.send("Authentication Failed! Please re-login and try again!");
+					}
+				});
+		}else{
+			if(req.body.section=="2"){
+				if(("\""+plain_Rb+"\"")==JSON2.stringify(JSON2.decycle(req.body.Rb))){
+					if((perm_cre=="Admin")||(perm_cre=="Owner")){
+						var creID=AES.decrypt(req.body.creID,Pass_cre).toString(CryptoJS.enc.Utf8);
+						var crePW=AES.decrypt(req.body.crePW,Pass_cre).toString(CryptoJS.enc.Utf8);
+						var creConf=AES.decrypt(req.body.creConf,Pass_cre).toString(CryptoJS.enc.Utf8);
+						if((creID=='')||(crePW=='')||(creConf=='')){
+							res.send("ID and Password can't be empty!");
+							return;
+						}
+						// check repeat
+						if(crePW!=creConf){
+							res.send("Repeat password didn't match new password!");
+							return;
+						}
+						var error=0;
+						var found=0;
+						DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: creID})
+							.on('result',function(res){
+								res.on('row',function(row){
+									found=1;
+								})
+								.on('error',function(err){
+									console.log("Failed to get Password"+': Error- '+inspect(err));
+									error=1;
+								})
+							})
+							.on('end',function(){
+								if(error==1){
+									res.send("Database Query Error!");
+									return;
+								}
+								if(found==1){
+									res.send("Account already exist!");
+								}else{
+									AdmDB.query("INSERT INTO Cpp2015.Account_Table (id, password, permission) VALUES ( :id , :pw , 'User');"
+									,{id: creID , pw: crePW })
+										.on('result',function(res){
+											res.on('error',function(err){
+												console.log("Failed to create Account"+': Error- '+inspect(err));
+												error=1;
+											})
+										})
+										.on('end',function(){
+											if(error==1){
+												res.send("Account create Failed!");
+											}else{
+												res.send("Account create Success!");
+											}
+										});
+								}
+							});
+					}else{
+						res.send("Only Admin or Owner can delete accounts!");
+					}
+				}else{
+					res.send("Wrong password!");
+				}
+			}
+		}
+	});
+	
 }
