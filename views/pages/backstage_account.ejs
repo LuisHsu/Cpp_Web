@@ -1,0 +1,155 @@
+ <% include ../layout/head %>
+<body>
+	<div id="left">
+		 <% include ../layout/back_header %>
+		 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+		 <script src="js/cycle.js"></script>
+		 <script src="js/login_req.js"></script>
+		 <% if((permission=="Admin")||(permission=="Owner")){ %>
+		 <script src="js/account.js"></script>
+		 <% } %>
+	</div>
+	<div id="main">
+		<div id="container">
+			<h1 style="margin:0px;margin-bottom:15px;">Change Password</h1>
+			<div id="ChangePW">
+				&nbsp Old：<input type="text" id="old_pw" class="pwinput" /> &nbsp
+				New：<input type="text" id="new_pw" class="pwinput" /> &nbsp
+				Repeat：<input type="text" id="conf_pw" class="pwinput" /> &nbsp
+				<button id="chg_btn" class="btn" onclick="ChangePassword()">change</button>
+			</div>
+			<h1 style="margin-top:15px;">Permission Setting</h1>
+			<table id="permtable" style="width:800px;margin:auto;text-align:center;">
+				<tr style="	background-color:#bb4336;color:#ffffff;border:0;">
+					<th class="tablehead">ID</th>
+					<th class="tablehead">Permission</th>
+					<% if((permission=="Admin")||(permission=="Owner")){ %>
+					<th class="tablehead">Edit/Delete</th>
+					<% } %>
+				</tr>
+				<% for(var i=0;i<ids.length;++i){ %>
+				<tr>
+					<td><%= ids[i] %></td>
+					<td><%= perms[i] %></td>
+					<% if((perms[i]!="Owner")&&((permission=="Admin")||(permission=="Owner"))&&((perms[i]=="User")||(ids[i]==viewerid)||(permission=="Owner"))){ %>
+					<td><button class="edbtn" acc=<%= ids[i] %> onclick="edclick(this)"> Edit</button>
+					&nbsp<button class="edbtn" acc=<%= ids[i] %> > Delete</button></td>
+					<% } %>
+				</tr>
+				<% } %>
+			</table>
+			<% if((permission=="Admin")||(permission=="Owner")){ %>
+			<div id="editdialog" class="dialog" acc='' >
+				<h2 style="margin-top:15px;">Edit Account</h2>
+				<div style="text-align:right;padding-right:50px;">
+					Account ID:<input type="text" id="edit_id" class="pwinput" /></br>
+					New Password:<input type="text" id="edit_pw" class="pwinput" /></br>
+					Confirm New:<input type="text" id="edit_conf" class="pwinput" /></br>
+				</div>
+				<div style="padding-left:44px;">
+					Permission:
+					<select id="edit_perm">
+						<option>Admin</option>
+						<option>User</option>
+					</select>
+				</div>
+				<center>
+					<button id="chg_button" class="btn"  onclick="ed_save()">Save</button>
+					<button id="edcan_button" class="btn" onclick="ed_cancel()">Cancel</button>
+				</center>
+			</div>
+			<div id="deldialog" class="dialog" style="height:220px;" acc='' >
+				<h2 style="margin-top:15px;">Delete Account</h2>
+				<h4 style="margin:0;color:#ee2a2a;">Sure to delete?</br>
+				Type your password to comfirm.</h4>
+				<center>
+					<input type="text" id="edit_conf" class="pwinput" style="width:300px;"/></br>
+					<button id="del_button" class="btn">Delete</button>
+					<button id="delcan_button" class="btn">Cancel</button>
+				</center>
+			</div>
+			<% } %>
+		</div>
+	</div>
+</body>
+
+<style>
+#main input{
+  border: 0;
+  line-height: 3.6em;
+  color: #71747A;
+
+}
+.pwinput{
+	background-color:#ffffff;
+	width:180px;
+	height:20px;
+	font-size:12px;
+}
+#container{
+	text-align:left;
+	width:1000px;
+}
+.btn{
+	background-color:#dd6a5e;
+	color:#ffffff;
+	width:80px;
+	height:23px;
+	font-size:12px;
+	border-radius:10px;
+	border: 0;
+	-moz-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	-webkit-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+}
+<% if((permission=="Admin")||(permission=="Owner")){ %>
+.edbtn{
+	color:#dd6a5e;
+	background-color:#ffffff;
+	width:60px;
+	height:23px;
+	font-size:12px;
+	border-radius:10px;
+	border: 0;
+	-moz-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	-webkit-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+}
+<% } %>
+#ChangePW{
+	text-align:left;
+	width:1000px;
+	height:50px;
+	border-style:solid;
+	border-radius:10px;
+	border-color:#dd6a5e;
+	border-width:2px;
+	margin:auto;
+	font-size:1.5em;
+	line-height:50px;
+}
+.tablehead{
+	width:250px;
+}
+<% if((permission=="Admin")||(permission=="Owner")){ %>
+.dialog{
+	width:400px;
+	height:260px;
+	top:150px;
+	left:650px;
+	background-color:#F2D5BB;
+	position:fixed;
+	z-index:20;
+	-moz-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	-webkit-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	border-radius:15px;
+	padding-left:15px;
+	line-height: 32px;
+	font-size:21px;
+	display:none;
+}
+<% } %>
+</style>
+</html>
+

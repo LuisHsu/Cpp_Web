@@ -10,20 +10,22 @@
 			<hr style="border:1px solid #F8DDBE;"/>
 			<ul type="none" style="margin:0;padding:0;font-size:1.6em;">
 				<li onClick="location.href='index.htm'">About Course</li>
-				<li onClick="location.href='works?work=all&order=Latest'">Works</li>
-				<ul type="none" style="margin:0;font-size:0.9em;">
-					<% for(var j=0;j<categories.length;++j){ %>
-					<% var ClickRef="location.href='works?work="+categories[j]+"&order=Latest'" %>
-					<li onClick=<%= ClickRef %>><%= categories[j] %></li>
-					<% } %>
-				</ul>
+				<li id="wor_opt" onClick="location.href='works?work=all&order=Latest'">Works</li>
 				<li onClick="location.href='loginpage'">Update Games</li>
 				<li onClick="location.href='index.htm'">Contact</li>
 			</ul>
+			<div id="wor_sub" style="z-index:20;top:294px;display:none;left:290px;font-size:1.6em;position:fixed;background-color:#ffffff">
+				<ul type="none" style="margin:0;padding:3px;	background-color: #BF834E;">
+				<% for(var j=0;j<categories.length;++j){ %>
+				<% var ClickRef="location.href='works?work="+categories[j]+"&order=Latest'" %>
+				<li class="submenu_work" onClick=<%= ClickRef %>><%= categories[j] %></li>
+				<% } %>
+				</ul>
+			</div>
 			<hr style="border:1px solid #F8DDBE;"/>
 		</div>
 		<div style="font-size:1.3em;bottom:30px;position:absolute;width:280px;">
-			<div id="Search">
+			<div id="Search" style="margin-top:35px;">
 				<input type="text" id="SearchText" size="10" maxlength="120" placeholder="Search Works" /><input type="submit" value=" " id="SearchButton" />
 			</div>
 			<hr style="border:1px solid #F8DDBE;"/>

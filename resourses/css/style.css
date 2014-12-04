@@ -28,6 +28,16 @@ html, body{
 }
 #list li:hover{
 	background-color: #BF834E;
+	
+}
+#list .submenu_work{
+	background-color: #BF834E;
+	color: #ffffff;
+}
+
+#list .submenu_work:hover{
+	background-color: #ffffff;
+	color: #BF834E;
 }
 
 /* main column */

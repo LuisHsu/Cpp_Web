@@ -1,9 +1,10 @@
-var express=require('express');
+var express=require('express.io');
 var bodyParser=require('body-parser');
 var maria=require('mariasql');
 var fs=require('fs');
 var inspect=require('util').inspect;
 var AES = require("crypto-js/aes");
+var cookieSession=require('cookie-session');
 
 //temp variable
 var c=0;
@@ -13,7 +14,7 @@ var DB=new maria();
 DB.connect({
 		host: "140.116.246.195",
 		user: "visitor",
-		password: "Abcd1234",
+		password: "z8ruarabsswv9m9d",
 		db: "Cpp2015"
 	});
 DB.on('connect',function(){
@@ -26,7 +27,7 @@ DB.on('connect',function(){
 	.on('close',function(){
 		console.log('Database Connect Close');
 	});
-	
+
 // Get Category
 var Category=new Array();
 DB.query('SELECT DISTINCT category FROM Cpp2015.Project_Table;')
@@ -55,9 +56,12 @@ app.enable('trust proxy');
 // Set ejs
 app.set('view engine','ejs');
 
+// Session
+app.use(cookieSession({secret: 'cpp103class'}));
+
 // Route and Login
 require('./route')(app,DB,Category);
-require('./login')(app,DB,Category,AES);
+require('./backstage')(app,DB,Category,AES);
 
 // Project file
 app.use('/projects',express.static(__dirname+'/projects'))

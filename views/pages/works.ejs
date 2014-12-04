@@ -91,20 +91,38 @@
 </style>
 <script>
 $( document ).ready(function() {
-  $('.imgWork')
-	.mouseenter(function(){
-		$(this).children(".Image").css("z-index","10");
-		var Text = $(this).children(".Text");
-		$(Text).fadeIn("fast");		
-	})
-	.mouseleave(function(){
-		var Text = $(this).children(".Text");
-		$(Text).fadeOut("slow");		
+	$('.imgWork')
+		.mouseenter(function(){
+			$(this).children(".Image").css("z-index","10");
+			var Text = $(this).children(".Text");
+			$(Text).fadeIn("fast");		
+		})
+		.mouseleave(function(){
+			var Text = $(this).children(".Text");
+			$(Text).fadeOut("slow");		
 		
-	})
-	.click(function(){
-		window.location.href = 'detail?index='+$(this).attr('proj');
-	});
+		})
+		.click(function(){
+			window.location.href = 'detail?index='+$(this).attr('proj');
+		});
+	$('#wor_opt')
+		.mouseenter(function(){
+			$('#wor_sub').css("display"," initial");
+			$('#wor_opt').css("background-color","#BF834E");
+		})
+		.mouseleave(function(){
+			$('#wor_sub').css("display"," none");
+			$('#wor_opt').css("background-color","transparent");	
+		});
+	$('#wor_sub')
+		.mouseenter(function(){
+			$('#wor_sub').css("display"," initial");
+			$('#wor_opt').css("background-color","#BF834E");
+		})
+		.mouseleave(function(){
+			$('#wor_sub').css("display"," none");
+			$('#wor_opt').css("background-color","transparent");
+		});
 });
 $('.sortbutton').click(function(){
 	window.location.href=window.location.href.split("order=")[0]+"order="+$(this).val();

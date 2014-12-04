@@ -17,7 +17,7 @@
 			<div style="font-size:1.8em"><%= title %></div>
 			<div style="font-size:1.0em;"><%= subtitle %></div>
 			<div style="font-size:0.9em;line-height:1.5em">Author:&nbsp;&nbsp;<%= author %> &nbsp;&nbsp;</br>
-			<font style="font-size:0.8em">Upload Time:&nbsp;&nbsp;<%= upload_time %></font></div>
+			<font style="font-size:0.7em">Upload Time:&nbsp;&nbsp;<%= upload_time %></font></div>
 			<div style="height:50px">
 			<% for(var i=0;i < star;++i){ %>
 			<img src="img/star2.png" width="50px"/>
@@ -42,6 +42,7 @@
 			<% } %>
 		</div>
 		<hr/>
+		<% if(picts.length>0){ %>
 		<div>
 			<span style="font-size:2.5em">Snapshots</span>
 			<ul id="featured">
@@ -53,6 +54,7 @@
 			</ul>
 		</div>
 		<hr/>
+		<% } %>
 		<div>
 			<span style="font-size:2.5em">Description</span>
 			<p style="font-size:1.5em">
@@ -114,19 +116,37 @@
 </style>
 <script>
 $( document ).ready(function() {
-  var WIDTH = $( window ).width()-350;
-  $('.imgWork')
-	.mouseenter(function(){
-		$(this).children(".Image").css("z-index","10");
-		var Text = $(this).children(".Text");
-		$(Text).fadeIn("fast");		
-	})
-	.mouseleave(function(){
-		var Text = $(this).children(".Text");
-		$(Text).fadeOut("slow");		
+  	var WIDTH = $( window ).width()-350;
+  	$('.imgWork')
+		.mouseenter(function(){
+			$(this).children(".Image").css("z-index","10");
+			var Text = $(this).children(".Text");
+			$(Text).fadeIn("fast");		
+		})
+		.mouseleave(function(){
+			var Text = $(this).children(".Text");
+			$(Text).fadeOut("slow");		
 		
-	});
-  $("#featured").zAccordion({
+		});
+	$('#wor_opt')
+		.mouseenter(function(){
+			$('#wor_sub').css("display"," initial");
+			$('#wor_opt').css("background-color","#BF834E");
+		})
+		.mouseleave(function(){
+			$('#wor_sub').css("display"," none");
+			$('#wor_opt').css("background-color","transparent");	
+		});
+	$('#wor_sub')
+		.mouseenter(function(){
+			$('#wor_sub').css("display"," initial");
+			$('#wor_opt').css("background-color","#BF834E");
+		})
+		.mouseleave(function(){
+			$('#wor_sub').css("display"," none");
+			$('#wor_opt').css("background-color","transparent");
+		});
+ 	$("#featured").zAccordion({
 		tabWidth: 100,
 		speed: 650,
 		slideClass: 'slider',

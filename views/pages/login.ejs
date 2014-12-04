@@ -144,5 +144,27 @@ p{
   margin-bottom: 30px;
 }
 </style>
+<script>
+$( document ).ready(function() {
+	$('#wor_opt')
+		.mouseenter(function(){
+			$('#wor_sub').css("display"," initial");
+			$('#wor_opt').css("background-color","#BF834E");
+		})
+		.mouseleave(function(){
+			$('#wor_sub').css("display"," none");
+			$('#wor_opt').css("background-color","transparent");	
+		});
+	$('#wor_sub')
+		.mouseenter(function(){
+			$('#wor_sub').css("display"," initial");
+			$('#wor_opt').css("background-color","#BF834E");
+		})
+		.mouseleave(function(){
+			$('#wor_sub').css("display"," none");
+			$('#wor_opt').css("background-color","transparent");
+		});
+});
+</script>
 </html>
 

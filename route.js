@@ -26,7 +26,7 @@ module.exports=function(app,DB,Category){
 		}else{
 			CurWork=req.query.work;
 			Title_Work=req.query.work;
-			qstring=qstring+" WHERE category= :work ;",{work: req.query.work};
+			qstring=qstring+" WHERE category= :work ";
 		}
 	
 		// Distinguish order option
@@ -41,7 +41,7 @@ module.exports=function(app,DB,Category){
 		}
 	
 		// Get data and render page
-		DB.query(qstring)
+		DB.query(qstring,{work: req.query.work})
 		.on('result',function(res){
 			res.on('row',function(row){
 				titles[c]=row.title;
