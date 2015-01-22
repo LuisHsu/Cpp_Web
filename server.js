@@ -62,6 +62,7 @@ app.use(cookieSession({secret: 'cpp103class'}));
 // Route and Login
 require('./route')(app,DB,Category);
 require('./backstage')(app,DB,Category,AES);
+require('./project')(app,DB,AES);
 
 // Project file
 app.use('/projects',express.static(__dirname+'/projects'))
