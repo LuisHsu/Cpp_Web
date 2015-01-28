@@ -150,6 +150,7 @@ function cre_cancel(){
 	document.getElementById("credialog").style.display="none";
 }
 
+// Create_Create button click
 function cre_create(){
 	var obj;
 	// request 1

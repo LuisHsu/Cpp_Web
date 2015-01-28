@@ -16,7 +16,7 @@ var maria=require('mariasql');
 var CryptoJS=require('crypto-js');
 var AdmDB=new maria();
 AdmDB.connect({
-		host: "140.116.246.195",
+		host: "192.168.0.103",
 		user: "admin",
 		password: "BD0gdJZpVxLdQaGf",
 		db: "Cpp2015"
@@ -56,7 +56,7 @@ module.exports=function(app,DB,Category,AES){
 						found=1;
 					})
 					.on('error',function(err){
-						console.log("Failed to get Password"+': Error- '+inspect(err));
+						console.log("Failed to get Password"+': Error- '+err);
 					})
 				})
 				.on('end',function(){
@@ -84,60 +84,65 @@ module.exports=function(app,DB,Category,AES){
 	
 	// Change Password
 	app.post('/ChangePassword',function(req,res){
-		if(req.body.section=="1"){
-			var ID=req.session.id;
-			var Ra1=req.body.key;
-			var Password='';
-			var found=0;
-			DB.query('SELECT password FROM Cpp2015.Account_Table WHERE id= :id ;',{id: ID})
-				.on('result',function(res){
-					res.on('row',function(row){
-						Password=row.password;
-						found=1;
-					})
-					.on('error',function(err){
-						console.log("Failed to get Password"+': Error- '+inspect(err));
-					})
-				})
-				.on('end',function(){
-					if(found==1){
-						plain_Rb=makepassword();
-						var Rb1=AES.encrypt(plain_Rb,Password);
-						res.send(JSON2.stringify(JSON2.decycle({Ra: Ra1,Rb: Rb1})));
-					}else{
-						res.send("Account isn't exist!");
-					}
-				});
-		}else{
-			if(req.body.section=="2"){
+		if(req.session.login==true){
+			if(req.body.section=="1"){
 				var ID=req.session.id;
-				var error=0;
-				if(("\""+plain_Rb+"\"")==JSON2.stringify(JSON2.decycle(req.body.Rb))){
-					var newPW=JSON.parse(AES.decrypt(req.body.NewPW,req.session.password).toString(CryptoJS.enc.Utf8));
-					AdmDB.query('UPDATE Cpp2015.Account_Table SET password= :newPW WHERE id= :id;',{newPW: newPW,id: ID})
-						.on('result',function(res){
-							res.on('error',function(err){
-								console.log("Failed to update Password"+': Error- '+inspect(err));
-								error=1;
-							})
+				var Ra1=req.body.key;
+				var Password='';
+				var found=0;
+				DB.query('SELECT password FROM Cpp2015.Account_Table WHERE id= :id ;',{id: ID})
+					.on('result',function(res){
+						res.on('row',function(row){
+							Password=row.password;
+							found=1;
 						})
-						.on('end',function(){
-							if(error==1){
-								res.send("Failed!");
-							}else{
-								req.session.password=newPW;
-								res.send("Changed!");
-							}
-						});
-				}else{
-					res.send("Wrong password!");
+						.on('error',function(err){
+							console.log("Failed to get Password"+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(found==1){
+							plain_Rb=makepassword();
+							var Rb1=AES.encrypt(plain_Rb,Password);
+							res.send(JSON2.stringify(JSON2.decycle({Ra: Ra1,Rb: Rb1})));
+						}else{
+							res.send("Account isn't exist!");
+						}
+					});
+			}else{
+				if(req.body.section=="2"){
+					var ID=req.session.id;
+					var error=0;
+					if(("\""+plain_Rb+"\"")==JSON2.stringify(JSON2.decycle(req.body.Rb))){
+						var newPW=JSON.parse(AES.decrypt(req.body.NewPW,req.session.password).toString(CryptoJS.enc.Utf8));
+						AdmDB.query('UPDATE Cpp2015.Account_Table SET password= :newPW WHERE id= :id;',{newPW: newPW,id: ID})
+							.on('result',function(res){
+								res.on('error',function(err){
+									console.log("Failed to update Password"+': Error- '+err);
+									error=1;
+								})
+							})
+							.on('end',function(){
+								if(error==1){
+									res.send("Failed!");
+								}else{
+									req.session.password=newPW;
+									res.send("Changed!");
+								}
+							});
+					}else{
+						res.send("Wrong password!");
+					}
 				}
 			}
+		}else{
+			res.redirect('/loginpage');
 		}
 	});
 	
 	// Query permission
 	app.post('/queryperm',function(req,res){
+		if(req.session.login==true){
 		var view_perm='';
 		var sess_perm='';
 		DB.query("SELECT permission FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.body.id})
@@ -146,7 +151,7 @@ module.exports=function(app,DB,Category,AES){
 					view_perm=row.permission;
 				})
 				.on('error',function(err){
-					console.log(req.ip+': Error- '+inspect(err));
+					console.log(req.ip+': Error- '+err);
 				})
 			})
 			.on('end',function(){
@@ -156,7 +161,7 @@ module.exports=function(app,DB,Category,AES){
 						sess_perm=row.permission;
 					})
 					.on('error',function(err){
-						console.log(req.ip+': Error- '+inspect(err));
+						console.log(req.ip+': Error- '+err);
 					})
 				})
 				.on('end',function(){
@@ -171,10 +176,14 @@ module.exports=function(app,DB,Category,AES){
 					}
 				});
 			});
+		}else{
+			res.redirect('/loginpage');
+		}
 	});
 	
 	// Edit Account
 	app.post('/AccountEdit',function(req,res){
+		if(req.session.login==true){
 		var ID=req.session.id;
 		var Password='';
 		var Permission='';
@@ -187,7 +196,7 @@ module.exports=function(app,DB,Category,AES){
 					found=1;
 				})
 				.on('error',function(err){
-					console.log("Failed to get Password"+': Error- '+inspect(err));
+					console.log("Failed to get Password"+': Error- '+err);
 				})
 			})
 			.on('end',function(){
@@ -217,7 +226,7 @@ module.exports=function(app,DB,Category,AES){
 								AdmDB.query('UPDATE Cpp2015.Account_Table SET '+savstr+' WHERE id= :id;',{id: req.body.id})
 									.on('result',function(res){
 										res.on('error',function(err){
-											console.log("Failed to edit Account"+': Error- '+inspect(err));
+											console.log("Failed to edit Account"+': Error- '+err);
 											error=1;
 										})
 									})
@@ -241,12 +250,16 @@ module.exports=function(app,DB,Category,AES){
 					res.send("Authentication Failed!");
 				}
 			});
+		}else{
+			res.redirect('/loginpage');
+		}
 	});
 
 	// Delete Account
 	var perm_del='';
 	var Pass_del='';
 	app.post('/AccountDelete',function(req,res){
+		if(req.session.login==true){
 		if(req.body.section=="1"){
 			var ID=req.session.id;
 			var Ra1=req.body.key;
@@ -260,7 +273,7 @@ module.exports=function(app,DB,Category,AES){
 						found=1;
 					})
 					.on('error',function(err){
-						console.log("Failed to get Password"+': Error- '+inspect(err));
+						console.log("Failed to get Password"+': Error- '+err);
 						error=1;
 					})
 				})
@@ -286,7 +299,7 @@ module.exports=function(app,DB,Category,AES){
 						AdmDB.query('DELETE FROM Cpp2015.Account_Table WHERE id= :id;',{id: delID})
 							.on('result',function(res){
 								res.on('error',function(err){
-									console.log("Failed to delete Account"+': Error- '+inspect(err));
+									console.log("Failed to delete Account"+': Error- '+err);
 									error=1;
 								})
 							})
@@ -304,6 +317,9 @@ module.exports=function(app,DB,Category,AES){
 					res.send("Wrong password!");
 				}
 			}
+		}
+		}else{
+			res.redirect('/loginpage');
 		}
 	});
 	
@@ -329,7 +345,7 @@ module.exports=function(app,DB,Category,AES){
 					exist=1;
 				})
 				.on('error',function(err){
-					console.log(req.ip+': Error- '+inspect(err));
+					console.log(req.ip+': Error- '+err);
 				})
 			})
 			.on('end',function(){
@@ -347,7 +363,7 @@ module.exports=function(app,DB,Category,AES){
 								i+=1;
 							})
 							.on('error',function(err){
-								console.log(req.ip+': Error- '+inspect(err));
+								console.log(req.ip+': Error- '+err);
 							})
 						})
 						.on('end',function(){
@@ -371,6 +387,8 @@ module.exports=function(app,DB,Category,AES){
 	app.get('/backstage_logout',function(req,res){
 		if(req.session.login==true){
 			req.session.login=false;
+			req.session.id="";
+			req.session.password="";
 		}
 		res.redirect('/loginpage');
 	});
@@ -379,6 +397,7 @@ module.exports=function(app,DB,Category,AES){
 	var perm_cre='';
 	var Pass_cre='';
 	app.post('/AccountCreate',function(req,res){
+		if(req.session.login==true){
 		if(req.body.section=="1"){
 			var ID=req.session.id;
 			var Ra1=req.body.key;
@@ -392,7 +411,7 @@ module.exports=function(app,DB,Category,AES){
 						found=1;
 					})
 					.on('error',function(err){
-						console.log("Failed to get Password"+': Error- '+inspect(err));
+						console.log("Failed to get Password"+': Error- '+err);
 						error=1;
 					})
 				})
@@ -433,7 +452,7 @@ module.exports=function(app,DB,Category,AES){
 									found=1;
 								})
 								.on('error',function(err){
-									console.log("Failed to get Password"+': Error- '+inspect(err));
+									console.log("Failed to get Password"+': Error- '+err);
 									error=1;
 								})
 							})
@@ -449,7 +468,7 @@ module.exports=function(app,DB,Category,AES){
 									,{id: creID , pw: crePW })
 										.on('result',function(res){
 											res.on('error',function(err){
-												console.log("Failed to create Account"+': Error- '+inspect(err));
+												console.log("Failed to create Account"+': Error- '+err);
 												error=1;
 											})
 										})
@@ -470,6 +489,9 @@ module.exports=function(app,DB,Category,AES){
 				}
 			}
 		}
+	}else{
+		res.redirect('/loginpage');
+	}
 	});
 	
 }

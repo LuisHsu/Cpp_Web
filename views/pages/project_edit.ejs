@@ -1,0 +1,170 @@
+ <% include ../layout/head %>
+<body>
+	<div id="left">
+		 <% include ../layout/back_header %>
+		 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+		 <script src="js/cycle.js"></script>
+		 <script src="js/project_edit.js"></script>
+		 <script src="ckeditor/ckeditor.js"></script>
+	</div>
+	<div id="main">
+		<div id="container">
+			<h1>
+				Project &nbsp
+				<font id="ProjectIndex" color="red">1</font>
+				&nbsp edit
+			</h1>
+			</br>
+			<h2>
+				Title:&nbsp
+				<input type="text" id="Title" class="editinput"/>
+				Subtitle:&nbsp
+				<input type="text" id="Subtitle" class="editinput" />
+			</h2>
+			<h2>
+				Author:&nbsp
+				<font id="Author" color="green">LuisHsu</font>
+				<button class="snap_del" onclick="chg_author_click()">Change</button>
+			</h2>
+			<h2>
+				Work:&nbsp
+				<font id="Work" color="green">Cat1</font>
+				<button class="snap_del" onclick="chg_work_click()">Change</button>
+			</h2>
+			</br>
+			<h2>
+				Cover:
+				<input type="file" id="uploadcover" name="uploadcover" accept="image/*" onchange="cover_change()" />
+			</h2>
+			<img id="coverview" src="projects/1/cover" style="width:300px;height:185px;" />
+			</br>
+			</br>
+			<h2>
+				Snapshots:
+				<font style="color:red;font-size:small;">&nbsp&nbsp&nbsp&nbsp *** All the changes here will take effect immediately</font>
+			</h2>
+			<a id="snap_1" class="snap_name">snap_1 &nbsp<button class="snap_del">x</button></a>&nbsp&nbsp
+			<a id="snap_2" class="snap_name">snap_2 &nbsp<button class="snap_del">x</button></a>&nbsp&nbsp
+			<a id="snap_3" class="snap_name">snap_3 &nbsp<button class="snap_del">x</button></a>&nbsp&nbsp
+			</br><input type="file" id="uploadsnap" name="uploadsnap" accept="image/*" multiple="true" /><button>Upload</button>
+			</br>
+			</br>
+			<h2>
+				Download Links:
+			</h2>
+			<img src="img/windows.png" style="width:30px;height:30px;"/>Windows:
+			<input type="file" id="uploadwin" name="uploadwin" />
+			<img src="img/linux.png" style="width:30px;height:30px;"/>Linux:
+			<input type="file" id="uploadlinux" name="uploadlinux" />
+			<img src="img/mac.png" style="width:30px;height:30px;"/>Mac:
+			<input type="file" id="uploadmac" name="uploadmac" />
+			</br>
+			</br>
+			<h2>
+				Description:
+			</h2>
+			<textarea id="Description" name="Description" rows="10" cols="60" ></textarea>
+			<script>
+				CKEDITOR.replace( 'Description' );
+			</script>
+			</br>
+			</br>
+			<button id="save_btn" class="edbtn big_btn" onclick="edit_save()">Save</button>
+			<button id="cancel_btn" class="edbtn big_btn" onclick="location.reload();">Cancel</button>
+			<div id="changedialog">
+				<h2 id="chgtitle">Change</h2>
+				<input type="text" id="Change_text" class="editinput"/></br>
+				</br>
+				<button id="chg_change" class="edbtn big_btn" >Change</button>
+				<button id="chg_cancel" class="edbtn big_btn" onclick="change_cancel();">Cancel</button>
+			</div>
+		</div>
+	</div>
+</body>
+
+<style>
+#main input{
+  border: 0;
+  line-height: 3.6em;
+  color: #71747A;
+
+}
+#container{
+	text-align:left;
+	width:1000px;
+}
+.tablehead{
+	width:250px;
+}
+.edbtn{
+	color:#dd6a5e;
+	background-color:#ffffff;
+	width:60px;
+	height:23px;
+	font-size:12px;
+	border-radius:10px;
+	border: 0;
+	-moz-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	-webkit-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+}
+
+.pwinput{
+	background-color:#ffffff;
+	width:180px;
+	height:20px;
+	font-size:12px;
+}
+
+.btn{
+	background-color:#dd6a5e;
+	color:#ffffff;
+	width:80px;
+	height:23px;
+	font-size:12px;
+	border-radius:10px;
+	border: 0;
+	-moz-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	-webkit-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+}
+
+.editinput{
+	width:300px;
+	height:30px;
+	font-size:20px;
+}
+.snap_del{
+	background-color:#FF8181;
+	color:#FFFFFF;
+	border-style:none;
+	border-radius:4px;
+}
+.snap_name{
+	color:green;
+}
+.big_btn{
+	width:120px;
+	height:30px;
+	font-size:15px;
+}
+#changedialog{
+	width:350px;
+	height:200px;
+	top:150px;
+	left:650px;
+	background-color:#F2D5BB;
+	position:fixed;
+	z-index:20;
+	-moz-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	-webkit-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	border-radius:15px;
+	padding-left:15px;
+	line-height: 32px;
+	font-size:21px;
+	display:none;
+}
+</style>
+</html>
+

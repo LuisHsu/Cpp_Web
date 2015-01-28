@@ -4,11 +4,61 @@
 		 <% include ../layout/back_header %>
 		 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 		 <script src="js/cycle.js"></script>
+		 <script src="js/project_cli.js"></script>
 	</div>
 	<div id="main">
 		<div id="container">
 			<h1>Editable Projects</h1>
+			<% if((permission=="Admin")||(permission=="Owner")){ %>
+				<button id="cre_btn" class="edbtn" onclick="cre_click()">Create Project</button>
+			<% } %>
+			<table style="text-align:center;">
+				<tr style="	background-color:#bb4336;color:#ffffff;border:0;">
+					<th class="tablehead">Index</th>
+					<th class="tablehead">Title</th>
+					<th class="tablehead">Work</th>
+					<th class="tablehead">Author</th>
+					<th class="tablehead">Update &nbsp Time</th>
+					<th class="tablehead">Edit/Delete</th>
+				</tr>
+				<% for(var i=0;i<indices.length;++i){ %>
+				<tr>
+					<td><%= indices[i] %></td>
+					<td><%= titles[i] %></td>
+					<td><%= works[i] %></td>
+					<td><%= authors[i] %></td>
+					<td><%= updates[i] %></td>
+					<td><button class="edbtn" ind=<%= indices[i] %> onclick="edit_click(this)">Edit</button>
+					&nbsp<button class="edbtn" ind=<%= indices[i] %> onclick="del_click(this)" >Delete</button></td>
+				</tr>
+				<% } %>
+			</table>
 			
+			<div id="deletedialog" ind='' >
+				<h2 style="margin-top:15px;">Delete Project</h2>
+				<h4 style="margin:0;">Sure to delete project &nbsp<font id="del_ind" style="color:#ee2a2a;"></font>&nbsp ?</br>
+				Type your password to comfirm.</h4>
+				<center>
+					<input type="password" id="del_conf" class="pwinput" style="width:300px;"/></br>
+					<button id="del_button" class="btn" onclick="del_delete()">Delete</button>
+					<button id="delcan_button" class="btn" onclick="del_cancel()">Cancel</button>
+				</center>
+			</div>
+			
+			<% if((permission=="Admin")||(permission=="Owner")){ %>
+			<div id="createdialog" >
+				<h2 style="margin-top:15px;">Create Project</h2>
+				<div style="text-align:right;padding-right:50px;">
+					Work:<input type="text" id="cre_work" class="pwinput" /></br>
+					Author:<input type="text" id="cre_author" class="pwinput" /></br>
+					<font color="green">Use "," to separate collaborator.</font>
+				</div>
+				<center>
+					<button id="cre_crebtn" class="btn"  onclick="cre_create()">Create</button>
+					<button id="cre_canbtn" class="btn" onclick="cre_cancel()">Cancel</button>
+				</center>
+			</div>
+			<% } %>
 		</div>
 	</div>
 </body>
@@ -24,6 +74,87 @@
 	text-align:left;
 	width:1000px;
 }
+.tablehead{
+	width:250px;
+}
+.edbtn{
+	color:#dd6a5e;
+	background-color:#ffffff;
+	width:60px;
+	height:23px;
+	font-size:12px;
+	border-radius:10px;
+	border: 0;
+	-moz-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	-webkit-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+}
+#cre_btn{
+	width:120px;
+	height:30px;
+	font-size:15px;
+	position:absolute;
+	top:75px;
+	right:30px;
+}
+
+#deletedialog{
+	width:400px;
+	height:220px;
+	top:150px;
+	left:650px;
+	background-color:#F2D5BB;
+	position:fixed;
+	z-index:20;
+	-moz-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	-webkit-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	border-radius:15px;
+	padding-left:15px;
+	line-height: 32px;
+	font-size:21px;
+	display:none;
+}
+
+.pwinput{
+	background-color:#ffffff;
+	width:180px;
+	height:20px;
+	font-size:12px;
+}
+
+.btn{
+	background-color:#dd6a5e;
+	color:#ffffff;
+	width:80px;
+	height:23px;
+	font-size:12px;
+	border-radius:10px;
+	border: 0;
+	-moz-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	-webkit-box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+	box-shadow:1px 1px 4px rgba(117,72,72,0.7);
+}
+
+<% if((permission=="Admin")||(permission=="Owner")){ %>
+#createdialog{
+	width:400px;
+	height:220px;
+	top:150px;
+	left:650px;
+	background-color:#F2D5BB;
+	position:fixed;
+	z-index:20;
+	-moz-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	-webkit-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	border-radius:15px;
+	padding-left:15px;
+	line-height: 32px;
+	font-size:21px;
+	display:none;
+}
+<% } %>
 </style>
 </html>
 

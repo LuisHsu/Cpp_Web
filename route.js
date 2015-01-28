@@ -1,3 +1,4 @@
+var fs=require('fs');
 module.exports=function(app,DB,Category){
 	// Redirect
 	app.get('/', function(req,res){
@@ -6,6 +7,22 @@ module.exports=function(app,DB,Category){
 
 	// Works
 	app.get('/works', function(req,res){
+		
+		var c1=0,s=0;
+		Category=null;
+		Category=new Array();
+		DB.query('SELECT DISTINCT category FROM Cpp2015.Project_Table;')
+		.on('result',function(res){
+			res.on('row',function(row){
+				Category[c1]=row.category;
+				c1+=1;
+			})
+			.on('error',function(err){
+				console.log("Failed to get category"+': Error- '+err);
+				s=1;
+			})
+		})
+		
 		// Set variable
 		var titles=new Array();
 		var subs=new Array();
@@ -52,7 +69,7 @@ module.exports=function(app,DB,Category){
 				c+=1;
 			})
 			.on('error',function(err){
-				console.log(req.ip+': Error- '+inspect(err));
+				console.log(req.ip+': Error- '+err);
 			})
 		})
 		.on('end',function(){
@@ -98,8 +115,13 @@ module.exports=function(app,DB,Category){
 				star=row.star;
 				popularity=row.popularity;
 				download_times=row.download_times;
-				for(var i=0;i<row.pic_count;++i){
-					picts[i]='projects/'+req.query.index+'/snap_'+i;
+				var dircont=fs.readdirSync('projects/'+req.query.index);
+				var piccont=0;
+				for(var i=0;i<dircont.length;++i){
+					if(dircont[i].indexOf("snap_")==0){
+						picts[piccont]='projects/'+req.query.index+'/'+dircont[i];
+						piccont+=1;
+					}
 				}
 				description=row.description;
 				if(row.win_path!=null){
@@ -119,7 +141,7 @@ module.exports=function(app,DB,Category){
 				}
 			})
 			.on('error',function(err){
-				console.log(req.ip+': Error- '+inspect(err));
+				console.log(req.ip+': Error- '+err);
 			})
 		})
 		.on('end',function(){
