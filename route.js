@@ -1,5 +1,5 @@
 var fs=require('fs');
-module.exports=function(app,DB,Category){
+module.exports=function(app,DB,Category,AdmDB){
 	// Redirect
 	app.get('/', function(req,res){
 		res.redirect('/works?work=all&order=Latest');
@@ -167,5 +167,18 @@ module.exports=function(app,DB,Category){
 	// Download
 	app.get('/download',function(req,res){
 		res.download(__dirname+'/projects/'+req.query.index+'/'+req.query.path);
+	});
+	
+	// About
+	app.get('/about',function(req,res){
+		res.render('pages/about',{
+			categories:Category
+		});
+	});
+	// Contact
+	app.get('/contact',function(req,res){
+		res.render('pages/contact',{
+			categories:Category
+		});
 	});
 }

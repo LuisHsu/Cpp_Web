@@ -14,26 +14,9 @@ function makepassword(){
 var JSON2=require('JSON2');
 var maria=require('mariasql');
 var CryptoJS=require('crypto-js');
-var AdmDB=new maria();
-AdmDB.connect({
-		host: "192.168.0.103",
-		user: "admin",
-		password: "BD0gdJZpVxLdQaGf",
-		db: "Cpp2015"
-	});
-AdmDB.on('connect',function(){
-		console.log('Database Admin Connected');
-	})
-	.on('error',function(err){
-		console.log('Database Admin Connect error');
-		console.log(err);
-	})
-	.on('close',function(){
-		console.log('Database Admin Connect Close');
-	});
 var plain_Rb;
 
-module.exports=function(app,DB,Category,AES){
+module.exports=function(app,DB,Category,AES,AdmDB){
 	// Login Page
 	app.get('/loginpage',function(req,res){
 		res.render('pages/login',{
@@ -326,7 +309,27 @@ module.exports=function(app,DB,Category,AES){
 	// Bulletin
 	app.get('/backstage_bulletin',function(req,res){
 		if(req.session.login==true){
-			res.render('pages/backstage_bulletin');
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT permission FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					exist=1;
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					res.render('pages/backstage_bulletin',{permission: view_perm});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
 		}else{
 			res.redirect('/loginpage');
 		}
@@ -398,100 +401,296 @@ module.exports=function(app,DB,Category,AES){
 	var Pass_cre='';
 	app.post('/AccountCreate',function(req,res){
 		if(req.session.login==true){
-		if(req.body.section=="1"){
-			var ID=req.session.id;
-			var Ra1=req.body.key;
-			var found=0;
-			var error=0;
-			DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: ID})
-				.on('result',function(res){
-					res.on('row',function(row){
-						Pass_cre=row.password;
-						perm_cre=row.permission;
-						found=1;
+			if(req.body.section=="1"){
+				var ID=req.session.id;
+				var Ra1=req.body.key;
+				var found=0;
+				var error=0;
+				DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: ID})
+					.on('result',function(res){
+						res.on('row',function(row){
+							Pass_cre=row.password;
+							perm_cre=row.permission;
+							found=1;
+						})
+						.on('error',function(err){
+							console.log("Failed to get Password"+': Error- '+err);
+							error=1;
+						})
 					})
-					.on('error',function(err){
-						console.log("Failed to get Password"+': Error- '+err);
-						error=1;
-					})
-				})
-				.on('end',function(){
-					if(error==1){
-						res.send("Authentication Failed! Please re-login and try again!");
-						return;
-					}
-					if(found==1){
-						plain_Rb=makepassword();
-						var Rb1=AES.encrypt(plain_Rb,Pass_cre);
-						res.send(JSON2.stringify(JSON2.decycle({Ra: Ra1,Rb: Rb1})));
-					}else{
-						res.send("Authentication Failed! Please re-login and try again!");
-					}
-				});
-		}else{
-			if(req.body.section=="2"){
-				if(("\""+plain_Rb+"\"")==JSON2.stringify(JSON2.decycle(req.body.Rb))){
-					if((perm_cre=="Admin")||(perm_cre=="Owner")){
-						var creID=AES.decrypt(req.body.creID,Pass_cre).toString(CryptoJS.enc.Utf8);
-						var crePW=AES.decrypt(req.body.crePW,Pass_cre).toString(CryptoJS.enc.Utf8);
-						var creConf=AES.decrypt(req.body.creConf,Pass_cre).toString(CryptoJS.enc.Utf8);
-						if((creID=='')||(crePW=='')||(creConf=='')){
-							res.send("ID and Password can't be empty!");
+					.on('end',function(){
+						if(error==1){
+							res.send("Authentication Failed! Please re-login and try again!");
 							return;
 						}
-						// check repeat
-						if(crePW!=creConf){
-							res.send("Repeat password didn't match new password!");
-							return;
+						if(found==1){
+							plain_Rb=makepassword();
+							var Rb1=AES.encrypt(plain_Rb,Pass_cre);
+							res.send(JSON2.stringify(JSON2.decycle({Ra: Ra1,Rb: Rb1})));
+						}else{
+							res.send("Authentication Failed! Please re-login and try again!");
 						}
-						var error=0;
-						var found=0;
-						DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: creID})
-							.on('result',function(res){
-								res.on('row',function(row){
-									found=1;
+					});
+			}else{
+				if(req.body.section=="2"){
+					if(("\""+plain_Rb+"\"")==JSON2.stringify(JSON2.decycle(req.body.Rb))){
+						if((perm_cre=="Admin")||(perm_cre=="Owner")){
+							var creID=AES.decrypt(req.body.creID,Pass_cre).toString(CryptoJS.enc.Utf8);
+							var crePW=AES.decrypt(req.body.crePW,Pass_cre).toString(CryptoJS.enc.Utf8);
+							var creConf=AES.decrypt(req.body.creConf,Pass_cre).toString(CryptoJS.enc.Utf8);
+							if((creID=='')||(crePW=='')||(creConf=='')){
+								res.send("ID and Password can't be empty!");
+								return;
+							}
+							// check repeat
+							if(crePW!=creConf){
+								res.send("Repeat password didn't match new password!");
+								return;
+							}
+							var error=0;
+							var found=0;
+							DB.query('SELECT * FROM Cpp2015.Account_Table WHERE id= :id ;',{id: creID})
+								.on('result',function(res){
+									res.on('row',function(row){
+										found=1;
+									})
+									.on('error',function(err){
+										console.log("Failed to get Password"+': Error- '+err);
+										error=1;
+									})
 								})
-								.on('error',function(err){
-									console.log("Failed to get Password"+': Error- '+err);
-									error=1;
-								})
-							})
-							.on('end',function(){
-								if(error==1){
-									res.send("Database Query Error!");
-									return;
-								}
-								if(found==1){
-									res.send("Account already exist!");
-								}else{
-									AdmDB.query("INSERT INTO Cpp2015.Account_Table (id, password, permission) VALUES ( :id , :pw , 'User');"
-									,{id: creID , pw: crePW })
-										.on('result',function(res){
-											res.on('error',function(err){
-												console.log("Failed to create Account"+': Error- '+err);
-												error=1;
+								.on('end',function(){
+									if(error==1){
+										res.send("Database Query Error!");
+										return;
+									}
+									if(found==1){
+										res.send("Account already exist!");
+									}else{
+										AdmDB.query("INSERT INTO Cpp2015.Account_Table (id, password, permission) VALUES ( :id , :pw , 'User');"
+										,{id: creID , pw: crePW })
+											.on('result',function(res){
+												res.on('error',function(err){
+													console.log("Failed to create Account"+': Error- '+err);
+													error=1;
+												})
 											})
-										})
-										.on('end',function(){
-											if(error==1){
-												res.send("Account create Failed!");
-											}else{
-												res.send("Account create Success!");
-											}
-										});
-								}
-							});
+											.on('end',function(){
+												if(error==1){
+													res.send("Account create Failed!");
+												}else{
+													res.send("Account create Success!");
+												}
+											});
+									}
+								});
+						}else{
+							res.send("Only Admin or Owner can delete accounts!");
+						}
 					}else{
-						res.send("Only Admin or Owner can delete accounts!");
+						res.send("Wrong password!");
 					}
-				}else{
-					res.send("Wrong password!");
 				}
 			}
+		}else{
+			res.redirect('/loginpage');
 		}
-	}else{
-		res.redirect('/loginpage');
-	}
 	});
 	
+	// Edit Bulletin
+	app.post('/bulletin_edit',function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					if((view_perm=="Admin")||(view_perm=="Owner")){
+						var dest=__dirname+"/views/pages/bulletin_content.ejs";
+						var fs=require('fs');
+						fs.exists(dest,function(content_exist){
+							if(content_exist){
+								fs.writeFile(dest,req.body.content,function(err){
+									if(err){
+										res.send("Error");
+									}else{
+										res.send("OK");
+									}
+								});
+							}else{
+								fs.appendFile(dest,req.body.content,function(err){
+									if(err){
+										res.send("Error");
+									}else{
+										res.send("OK");
+									}
+								});
+							}
+						});						
+					}else{
+						res.redirect('/loginpage');
+					}
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	// Edit_About_Contact_page
+	app.get('/backstage_about_contact',function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT permission FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					exist=1;
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				if(exist==1){
+					if((view_perm=="Admin")||(view_perm=="Owner")){
+						res.render('pages/backstage_about_contact',{
+							permission: view_perm
+						});
+					}else{
+						res.redirect('/loginpage');
+					}
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	// Edit About
+	app.post('/about_edit',function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					if((view_perm=="Admin")||(view_perm=="Owner")){
+						var dest=__dirname+"/views/pages/about_content.ejs";
+						var fs=require('fs');
+						fs.exists(dest,function(content_exist){
+							if(content_exist){
+								fs.writeFile(dest,req.body.content,function(err){
+									if(err){
+										res.send("Error");
+									}else{
+										res.send("OK");
+									}
+								});
+							}else{
+								fs.appendFile(dest,req.body.content,function(err){
+									if(err){
+										res.send("Error");
+									}else{
+										res.send("OK");
+									}
+								});
+							}
+						});						
+					}else{
+						res.redirect('/loginpage');
+					}
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	// Edit Contact
+	app.post('/contact_edit',function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					if((view_perm=="Admin")||(view_perm=="Owner")){
+						var dest=__dirname+"/views/pages/contact_content.ejs";
+						var fs=require('fs');
+						fs.exists(dest,function(content_exist){
+							if(content_exist){
+								fs.writeFile(dest,req.body.content,function(err){
+									if(err){
+										res.send("Error");
+									}else{
+										res.send("OK");
+									}
+								});
+							}else{
+								fs.appendFile(dest,req.body.content,function(err){
+									if(err){
+										res.send("Error");
+									}else{
+										res.send("OK");
+									}
+								});
+							}
+						});						
+					}else{
+						res.redirect('/loginpage');
+					}
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
 }

@@ -9,15 +9,14 @@
 	</div>
 	<div id="main">
 		<div id="container">
-			<h1>Bulletin</h1>
-			<div id="bulletin">
-				<% include ./bulletin_content %>
-			</div>
 			<% if((permission=="Admin")||(permission=="Owner")){ %>
 			<div>
-				<h1>Bulletin Edit</h1>
-				<textarea id="Edit_Area" name="Edit_Area" rows="10" cols="60" ></textarea>
-				<button id="edbtn" onclick="edit_bulletin()">Save</button>
+				<h1>Edit About</h1>
+				<textarea id="Edit_About" name="Edit_Area" rows="10" cols="60" ><% include ./about_content %></textarea>
+				<button id="edbtn" onclick="edit_about()">Save About</button>
+				<h1>Edit Contact</h1>
+				<textarea id="Edit_Contact" name="Edit_Area" rows="10" cols="60" ><% include ./contact_content %></textarea>
+				<button id="edbtn" onclick="edit_contact()">Save Contact</button>
 			</div>
 			<% } %>
 		</div>
@@ -26,8 +25,8 @@
 
 <% if((permission=="Admin")||(permission=="Owner")){ %>
 <script>
-	CKEDITOR.replace('Edit_Area');
-	CKEDITOR.instances.Edit_Area.setData(document.getElementById("bulletin").innerHTML);
+	CKEDITOR.replace('Edit_About');
+	CKEDITOR.replace('Edit_Contact');
 </script>
 <% } %>
 

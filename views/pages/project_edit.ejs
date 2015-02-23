@@ -11,66 +11,89 @@
 		<div id="container">
 			<h1>
 				Project &nbsp
-				<font id="ProjectIndex" color="red">1</font>
+				<font id="ProjectIndex" color="red"><%= index %></font>
 				&nbsp edit
 			</h1>
-			</br>
 			<h2>
 				Title:&nbsp
-				<input type="text" id="Title" class="editinput"/>
+				<input type="text" id="Title" class="editinput" value=<%= title %> />
 				Subtitle:&nbsp
-				<input type="text" id="Subtitle" class="editinput" />
+				<input type="text" id="Subtitle" class="editinput" value=<%= subtitle %> />
 			</h2>
 			<h2>
 				Author:&nbsp
-				<font id="Author" color="green">LuisHsu</font>
+				<font id="Author" color="green"><%= author %></font>
+				<% if((permission=="Admin")||(permission=="Owner")){ %>
 				<button class="snap_del" onclick="chg_author_click()">Change</button>
+				<% } %>
 			</h2>
 			<h2>
 				Work:&nbsp
-				<font id="Work" color="green">Cat1</font>
+				<font id="Work" color="green"><%= work %></font>
+				<% if((permission=="Admin")||(permission=="Owner")){ %>
 				<button class="snap_del" onclick="chg_work_click()">Change</button>
+				<% } %>
 			</h2>
 			</br>
 			<h2>
 				Cover:
 				<input type="file" id="uploadcover" name="uploadcover" accept="image/*" onchange="cover_change()" />
+				<progress id="preview_cover_status" style="height:18px;width:150px;display:none;" max="100"></progress>
 			</h2>
-			<img id="coverview" src="projects/1/cover" style="width:300px;height:185px;" />
+			<img id="coverview" src=<%= "projects/"+index+"/cover" %> style="width:300px;height:185px;" />
 			</br>
 			</br>
 			<h2>
 				Snapshots:
-				<font style="color:red;font-size:small;">&nbsp&nbsp&nbsp&nbsp *** All the changes here will take effect immediately</font>
+				<font style="color:red;font-size:small;">&nbsp&nbsp&nbsp&nbsp *** All the changes about Snapshots will take effect immediately without clicking "Save" button</font>
 			</h2>
-			<a id="snap_1" class="snap_name">snap_1 &nbsp<button class="snap_del">x</button></a>&nbsp&nbsp
-			<a id="snap_2" class="snap_name">snap_2 &nbsp<button class="snap_del">x</button></a>&nbsp&nbsp
-			<a id="snap_3" class="snap_name">snap_3 &nbsp<button class="snap_del">x</button></a>&nbsp&nbsp
-			</br><input type="file" id="uploadsnap" name="uploadsnap" accept="image/*" multiple="true" /><button>Upload</button>
+			<div id="snap_list">
+				<% for(var i=0;i<Snapshots.length;++i){ %>
+				<a id=<%= Snapshots[i] %> class="snap_name"><%= Snapshots[i] %> &nbsp<button class="snap_del" pic=<%= Snapshots[i] %> onclick="snap_delete(this)" >x</button>&nbsp&nbsp</a>
+				<% } %>
+			</div>
 			</br>
+			<div id="snap_upload_button">
+			<input type="file" id="uploadsnap" name="uploadsnap" accept="image/*" multiple="true" />
+			<button onclick="snap_upload()">Upload</button>Recommand Size: 310(height)*465(width)(7 pictures)
+			</div>
+			</br><progress id="snap_upload_status" style="height:18px;width:150px;display:none;" max="100"></progress><a id="snap_upload_fcount" style="color:red;"></a>
 			</br>
 			<h2>
 				Download Links:
 			</h2>
-			<img src="img/windows.png" style="width:30px;height:30px;"/>Windows:
+			<img src="img/windows.png" style="width:30px;height:30px;" />Windows &nbsp&nbsp&nbsp
+			<a style="color:green;">Current: <a id="CurWin" style="color:green;"><%= Win_path %></a></a></br>
+			<div id="reset_win">
+			Upload:
 			<input type="file" id="uploadwin" name="uploadwin" />
-			<img src="img/linux.png" style="width:30px;height:30px;"/>Linux:
-			<input type="file" id="uploadlinux" name="uploadlinux" />
-			<img src="img/mac.png" style="width:30px;height:30px;"/>Mac:
-			<input type="file" id="uploadmac" name="uploadmac" />
+			<button onclick="Link_reset('win')">Reset</button>
+			</div>
 			</br>
+			</br><img src="img/linux.png" style="width:30px;height:30px;" />Linux &nbsp&nbsp&nbsp
+			<a style="color:green;">Current: <a id="CurLinux" style="color:green;"><%= Linux_path %></a></a></br>
+			<div id="reset_linux">
+			Upload:
+			<input type="file" id="uploadlinux" name="uploadlinux" />
+			<button onclick="Link_reset('linux')">Reset</button>
+			</div>
+			</br>
+			</br><img src="img/mac.png" style="width:30px;height:30px;" />Mac: &nbsp&nbsp&nbsp
+			<a style="color:green;">Current: <a id="CurMac" style="color:green;"><%= Mac_path %></a></a></br>
+			<div id="reset_mac">
+			Upload:
+			<input type="file" id="uploadmac" name="uploadmac" />
+			<button onclick="Link_reset('mac')">Reset</button>
+			</div>
 			</br>
 			<h2>
 				Description:
 			</h2>
 			<textarea id="Description" name="Description" rows="10" cols="60" ></textarea>
-			<script>
-				CKEDITOR.replace( 'Description' );
-			</script>
 			</br>
 			</br>
 			<button id="save_btn" class="edbtn big_btn" onclick="edit_save()">Save</button>
-			<button id="cancel_btn" class="edbtn big_btn" onclick="location.reload();">Cancel</button>
+			<button id="cancel_btn" class="edbtn big_btn" onclick="location.href='project_list';">Cancel</button>
 			<div id="changedialog">
 				<h2 id="chgtitle">Change</h2>
 				<input type="text" id="Change_text" class="editinput"/></br>
@@ -78,9 +101,29 @@
 				<button id="chg_change" class="edbtn big_btn" >Change</button>
 				<button id="chg_cancel" class="edbtn big_btn" onclick="change_cancel();">Cancel</button>
 			</div>
+			<a id="initial_Description" style="display:none;"><%- Description %></a>
+			<div id="savedialog">
+				<h2>Save Project</h2>
+				1.Upload Windows Version:</br>
+				<progress id="Save_Win_Bar" style="height:18px;width:150px;" max="100"></progress>
+				<a id="Save_Win_Status" style="color:red;">Uploading...</a></br>
+				2.Upload Linux Version:</br>
+				<progress id="Save_Linux_Bar" style="height:18px;width:150px;" max="100"></progress>
+				<a id="Save_Linux_Status" style="color:red;">Uploading...</a></br>
+				3.Upload Mac Version:</br>
+				<progress id="Save_Mac_Bar" style="height:18px;width:150px;" max="100"></progress>
+				<a id="Save_Mac_Status" style="color:red;">Uploading...</a></br>
+				4.Update Database:</br>
+				<a id="Save_Data_Status" style="color:red;">Updating...</a></br>
+			</div>
 		</div>
 	</div>
 </body>
+
+<script>
+	CKEDITOR.replace('Description');
+	CKEDITOR.instances.Description.setData(document.getElementById("initial_Description").innerHTML);
+</script>
 
 <style>
 #main input{
@@ -152,6 +195,23 @@
 	width:350px;
 	height:200px;
 	top:150px;
+	left:650px;
+	background-color:#F2D5BB;
+	position:fixed;
+	z-index:20;
+	-moz-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	-webkit-box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	box-shadow:0px 0px 3px 5px rgba(117,72,72,0.5);
+	border-radius:15px;
+	padding-left:15px;
+	line-height: 32px;
+	font-size:21px;
+	display:none;
+}
+#savedialog{
+	width:450px;
+	height:400px;
+	top:100px;
 	left:650px;
 	background-color:#F2D5BB;
 	position:fixed;

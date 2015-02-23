@@ -101,5 +101,5 @@ function del_delete(){
 
 // Edit Action
 function edit_click(e){
-	location.href="project_edit_page";
+	location.href="project_edit_page?index="+e.getAttribute("ind");
 }

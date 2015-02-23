@@ -57,9 +57,7 @@
 		<% } %>
 		<div>
 			<span style="font-size:2.5em">Description</span>
-			<pre style="font-size:1.5em">
-				<%= description %>
-			</pre>	
+			<%- description %>
 		</div>
 		<hr/>
 	</div>
@@ -159,7 +157,7 @@ $( document ).ready(function() {
 		},
 		width: WIDTH,
 		height: 335
-  });
+  	});
 });
 </script>
 </html>

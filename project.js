@@ -2,25 +2,8 @@ var JSON2=require('JSON2');
 var maria=require('mariasql');
 var CryptoJS=require('crypto-js');
 var fs = require('fs');
-var AdmDB=new maria();
-AdmDB.connect({
-		host: "192.168.0.103",
-		user: "admin",
-		password: "BD0gdJZpVxLdQaGf",
-		db: "Cpp2015"
-	});
-AdmDB.on('connect',function(){
-		console.log('Database Project Admin Connected');
-	})
-	.on('error',function(err){
-		console.log('Database Project Admin Connect error');
-		console.log(err);
-	})
-	.on('close',function(){
-		console.log('Database Project Admin Connect Close');
-	});
 	
-module.exports=function(app,DB,AES,Category,multipartMiddleware){
+module.exports=function(app,DB,AES,Category,multipartMiddleware,AdmDB){
 	// Project  Page
 	app.get('/project_list',function(req,res){
 		if(req.session.login==true){
@@ -66,7 +49,7 @@ module.exports=function(app,DB,AES,Category,multipartMiddleware){
 									updates[i]=row.upload_time;
 									i+=1;
 								}
-							})equire('fs');
+							})
 							.on('error',function(err){
 								console.log(req.ip+': Error- '+err);
 							})
@@ -261,15 +244,567 @@ module.exports=function(app,DB,AES,Category,multipartMiddleware){
 	
 	// Project Edit Page
 	app.get('/project_edit_page',function(req,res){
-		res.render('pages/project_edit');
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					//Backup data to text file
+					var Project_Index=req.query.index;
+					var Title;
+					var Subtitle;
+					var Author;
+					var Work;
+					var Snaps=new Array();
+					var Description;
+					var Win_path;
+					var Mac_path;
+					var Linux_path;
+					var verify=0;
+					DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index= :index;",{index: Project_Index})
+					.on('result',function(res){
+						res.on('row',function(row){
+							var SplitAuthor=row.author.split(",");
+							for(var j=0;j<SplitAuthor.length;++j){
+								if((SplitAuthor[j]==req.session.id)||(view_perm=="Admin")||(view_perm=="Owner")){
+									verify=1;
+									Title=row.title;
+									Subtitle=row.subtitle;
+									Author=row.author;
+									Work=row.category;
+									Description=row.description;
+									Win_path=row.win_path;
+									Mac_path=row.mac_path;
+									Linux_path=row.linux_path;
+									break;
+								}
+							}
+						})
+						.on('error',function(err){
+							console.log(req.ip+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(verify==1){
+							var dirlist=fs.readdirSync('projects/'+Project_Index);
+							var piccont=0;
+							for(var i=0;i<dirlist.length;++i){
+								if(dirlist[i].indexOf("snap_")==0){
+									Snaps[piccont]=dirlist[i];
+									piccont+=1;
+								}
+							}
+							res.render('pages/project_edit',{
+								index: Project_Index,
+								title: Title,
+								subtitle: Subtitle,
+								author: Author,
+								work: Work,
+								permission: view_perm,
+								Snapshots: Snaps,
+								Win_path: Win_path,
+								Linux_path: Linux_path,
+								Mac_path: Mac_path,
+								Description: Description
+							});
+						}else{
+							res.redirect('/loginpage');
+						}
+					});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
 	});
 	
 	// Project Cover Preview
 	app.post('/preview_cover',multipartMiddleware,function(req,res){
-		var fs = require('fs');
-		var tmpPath = req.files.upload.path;
-		var l = tmpPath.split('/').length;
-		console.log(req.files.upload.path+" "+req.body.index);
-		res.send("OK");
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					//Backup data to text file
+					var Project_Index=req.body.index;
+					var verify=0;
+					DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index= :index;",{index: Project_Index})
+					.on('result',function(res){
+						res.on('row',function(row){
+							var SplitAuthor=row.author.split(",");
+							for(var j=0;j<SplitAuthor.length;++j){
+								if((SplitAuthor[j]==req.session.id)||(view_perm=="Admin")||(view_perm=="Owner")){
+									verify=1;
+									break;
+								}
+							}
+						})
+						.on('error',function(err){
+							console.log(req.ip+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(verify==1){
+							var fs = require('fs');
+							var tmpPath = req.files.upload.path;
+							var dest = __dirname+"/projects/"+req.body.index+"/cover_preview";
+							fs.readFile(tmpPath, function(err, data) {
+								if (err) {
+									console.log(err);
+									res.send("Error");
+									return;
+								}
+								fs.writeFile(dest, data, function(err) {
+									if (err) {
+								  		console.log(err);
+								  		res.send("Error");
+								  		return;
+									}
+									fs.unlink(tmpPath,function(err){
+										if (err) {
+									  		console.log(err);
+									  		res.send("Error");
+									  		return;
+										}
+										res.send("OK");
+									});
+							  	});
+							});
+						}else{
+							res.redirect('/loginpage');
+						}
+					});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	// Project Snap Upload
+	app.post('/snap_upload',multipartMiddleware,function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					//Backup data to text file
+					var Project_Index=req.body.index;
+					var verify=0;
+					var Pic_count;
+					DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index= :index;",{index: Project_Index})
+					.on('result',function(res){
+						res.on('row',function(row){
+							var SplitAuthor=row.author.split(",");
+							for(var j=0;j<SplitAuthor.length;++j){
+								if((SplitAuthor[j]==req.session.id)||(view_perm=="Admin")||(view_perm=="Owner")){
+									verify=1;
+									Pic_count=row.pic_count;
+									break;
+								}
+							}
+						})
+						.on('error',function(err){
+							console.log(req.ip+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(verify==1){
+							var fs = require('fs');
+							var tmpPath = req.files.upload.path;
+							var dest = __dirname+"/projects/"+req.body.index+"/snap_"+Pic_count;
+							fs.readFile(tmpPath, function(err, data) {
+								if (err) {
+									console.log(err);
+									res.send("Error");
+									return;
+								}
+								fs.writeFile(dest, data, function(err) {
+									if (err) {
+								  		console.log(err);
+								  		res.send("Error");
+								  		return;
+									}
+									var pic1=parseInt(Pic_count)+1;
+									AdmDB.query('UPDATE Cpp2015.Project_Table SET pic_count= :newCount WHERE project_index= :index;',{index: Project_Index,newCount: pic1})
+									.on('result',function(res){
+										res.on('error',function(err){
+											console.log(req.ip+': Error- '+err);
+										})
+									})
+									fs.unlink(tmpPath,function(err){
+										if (err) {
+									  		console.log(err);
+									  		res.send("Error");
+									  		return;
+										}
+										res.send("snap_"+Pic_count);
+									});
+							  	});
+							});
+						}else{
+							res.redirect('/loginpage');
+						}
+					});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	// Project Snap Delete
+	app.post('/snap_delete',multipartMiddleware,function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					//Backup data to text file
+					var Project_Index=req.body.index;
+					var verify=0;
+					DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index= :index;",{index: Project_Index})
+					.on('result',function(res){
+						res.on('row',function(row){
+							var SplitAuthor=row.author.split(",");
+							for(var j=0;j<SplitAuthor.length;++j){
+								if((SplitAuthor[j]==req.session.id)||(view_perm=="Admin")||(view_perm=="Owner")){
+									verify=1;
+									break;
+								}
+							}
+						})
+						.on('error',function(err){
+							console.log(req.ip+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(verify==1){
+							var fs = require('fs');
+							var dest = __dirname+"/projects/"+req.body.index+"/"+req.body.snapshot;
+							fs.unlink(dest,function(err){
+								if (err) {
+							  		console.log(err);
+							  		res.send("Error!");
+							  		return;
+								}
+								res.send(req.body.snapshot+" delete Success!");
+							});
+						}else{
+							res.redirect('/loginpage');
+						}
+					});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	//Project Edit Post
+	app.post('/Project_edit_edit',function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					//Backup data to text file
+					var Project_Index=req.body.Index;
+					var verify=0;
+					DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index= :index;",{index: Project_Index})
+					.on('result',function(res){
+						res.on('row',function(row){
+							var SplitAuthor=row.author.split(",");
+							for(var j=0;j<SplitAuthor.length;++j){
+								if((SplitAuthor[j]==req.session.id)||(view_perm=="Admin")||(view_perm=="Owner")){
+									verify=1;
+									break;
+								}
+							}
+						})
+						.on('error',function(err){
+							console.log(req.ip+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(verify==1){
+							var qrystr="UPDATE Cpp2015.Project_Table SET title= :Title , subtitle= :Subtitle , description= :Description , win_path= :Win , linux_path= :Linux , mac_path= :Mac ";
+							if((view_perm=="Admin")||(view_perm=="Owner")){
+								qrystr=qrystr+", author= :Author , category= :Work ";
+							}
+							qrystr=qrystr+"WHERE project_index= :Index ;";
+							AdmDB.query(qrystr,{
+								Index: Project_Index,
+								Title: req.body.Title,
+								Subtitle: req.body.Subtitle,
+								Description: req.body.Description,
+								Win: req.body.Win,
+								Linux: req.body.Linux,
+								Mac: req.body.Mac,
+								Author: req.body.Author,
+								Work: req.body.Work
+							})
+							.on('result',function(res){
+								res.on('error',function(err){
+									console.log(req.ip+': Error- '+err);
+								})
+							})
+							.on('end',function(){
+								var fs=require('fs');
+								var dest=__dirname+"/projects/"+Project_Index+"/cover_preview";
+								fs.exists(dest, function (exists) {
+									if(exists){
+										fs.exists(__dirname+"/projects/"+Project_Index+"/cover",function(coverExist){
+											if(coverExist){
+												fs.unlink(__dirname+"/projects/"+Project_Index+"/cover",function(err){
+													if(err){
+														console.log(req.ip+': Error- '+err);
+														res.send("Error");
+													}else{
+														fs.rename(dest,__dirname+"/projects/"+Project_Index+"/cover",function(err){
+															if(err){
+																console.log(req.ip+': Error- '+err);
+																res.send("Error");
+															}else{
+																res.send("OK");
+															}
+														});
+													}
+												});
+											}else{
+												fs.rename(dest,__dirname+"/projects/"+Project_Index+"/cover",function(err){
+													if(err){
+														console.log(req.ip+': Error- '+err);
+														res.send("Error");
+													}else{
+														res.send("OK");
+													}
+												});
+											}
+										});
+									}else{
+										res.send("OK");
+									}
+								});
+							});
+						}else{
+							res.redirect('/loginpage');
+						}
+					});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
+	});
+	
+	// Project file Upload
+	app.post('/Project_file_upload',multipartMiddleware,function(req,res){
+		if(req.session.login==true){
+			var view_perm='';
+			var exist=0;
+			// Get viewer permission
+			DB.query("SELECT * FROM Cpp2015.Account_Table WHERE id= :id;",{id: req.session.id})
+			.on('result',function(res){
+				res.on('row',function(row){
+					view_perm=row.permission;
+					if(row.password==req.session.password){
+						exist=1;
+					}
+				})
+				.on('error',function(err){
+					console.log(req.ip+': Error- '+err);
+				})
+			})
+			.on('end',function(){
+				// Get Data
+				if(exist==1){
+					var Project_Index=req.body.index;
+					var verify=0;
+					var Pic_count;
+					var Old_Path;
+					var Type_prefix;
+					DB.query("SELECT * FROM Cpp2015.Project_Table WHERE project_index= :index;",{index: Project_Index})
+					.on('result',function(res){
+						res.on('row',function(row){
+							var SplitAuthor=row.author.split(",");
+							for(var j=0;j<SplitAuthor.length;++j){
+								if((SplitAuthor[j]==req.session.id)||(view_perm=="Admin")||(view_perm=="Owner")){
+									verify=1;
+									Pic_count=row.pic_count;
+									if(req.body.type=="win"){
+										Old_Path=row.win_path;
+										Type_prefix="File_Win_";
+									}else{
+										if(req.body.type=="linux"){
+											Old_Path=row.linux_path;
+											Type_prefix="File_Linux_";
+										}else{
+											Old_Path=row.mac_path;
+											Type_prefix="File_Mac_";
+										}
+									}
+									break;
+								}
+							}
+						})
+						.on('error',function(err){
+							console.log(req.ip+': Error- '+err);
+						})
+					})
+					.on('end',function(){
+						if(verify==1){
+							var fs = require('fs');
+							var tmpPath = req.files.upload.path;
+							var dest = __dirname+"/projects/"+req.body.index+"/"+Type_prefix+req.files.upload.name;
+							fs.readFile(tmpPath, function(err, data) {
+								if (err) {
+									console.log(err);
+									res.send("Error");
+									return;
+								}
+								fs.exists(dest,function(exist){
+									if(exist){
+										fs.unlink(dest,function(err){
+											if(err){
+										  		console.log(err);
+										  		res.send("Error");
+										  		return;
+											}
+											fs.writeFile(dest, data, function(err) {
+												if (err) {
+											  		console.log(err);
+											  		res.send("Error");
+											  		return;
+												}
+												fs.unlink(tmpPath,function(err){
+													if (err) {
+												  		console.log(err);
+												  		res.send("Error");
+												  		return;
+													}
+													res.send("OK");
+												});
+										  	});
+										});
+									}else{
+										fs.writeFile(dest, data, function(err) {
+											if (err) {
+										  		console.log(err);
+										  		res.send("Error");
+										  		return;
+											}
+											fs.unlink(tmpPath,function(err){
+												if (err) {
+											  		console.log(err);
+											  		res.send("Error");
+											  		return;
+												}
+												res.send("OK");
+											});
+									  	});
+									}
+								});
+							});
+							fs.exists(__dirname+"/projects/"+req.body.index+"/"+Old_Path,function(exist){
+								if(exist){
+									fs.unlink(__dirname+"/projects/"+req.body.index+"/"+Old_Path,function(err){
+										if(err){
+									  		console.log(err);
+										}
+									});
+								}
+							});
+						}else{
+							res.redirect('/loginpage');
+						}
+					});
+				}else{
+					res.redirect('/loginpage');
+				}
+			});
+		}else{
+			res.redirect('/loginpage');
+		}
 	});
 }
