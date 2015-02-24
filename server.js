@@ -12,7 +12,7 @@ var multipartMiddleware = multipart();
 // Connect to Database
 var DB=new maria();
 DB.connect({
-		host: "192.168.0.103",
+		host: "127.0.0.1",
 		user: "visitor",
 		password: "z8ruarabsswv9m9d",
 		db: "Cpp2015"
@@ -30,7 +30,7 @@ DB.on('connect',function(){
 
 var AdmDB=new maria();
 AdmDB.connect({
-		host: "192.168.0.103",
+		host: "127.0.0.1",
 		user: "admin",
 		password: "BD0gdJZpVxLdQaGf",
 		db: "Cpp2015"
